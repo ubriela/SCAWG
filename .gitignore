@@ -1,0 +1,6 @@
+bin/
+dataset/
+res/
+doc/
+.DS_Store
+copyscript/
