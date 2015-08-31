@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.geocrowd.common.utils.Stats;
 import org.geocrowd.common.utils.Utils;
-import org.geocrowd.datasets.dtype.ValueFreq;
+import org.geocrowd.dtype.ValueFreq;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;

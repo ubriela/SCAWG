@@ -55,7 +55,7 @@ public class GeocrowdConstants {
 
 	// shared parameters
 	/** The Task type no. */
-	public static double TaskTypeNo = 0; // number of task types/expertise
+	public static double TaskCategoryNo = 0; // number of task categories/expertise
 
 	/** The Max tasks per worker. */
 	public static int MaxTasksPerWorker = 20; // maximum # of tasks that a
@@ -78,48 +78,6 @@ public class GeocrowdConstants {
 
 	/** The small resolution. */
 	public static int smallResolution = 1;
-
-	// real dataset yelp
-	/** The yelp resolution. */
-	public static int yelpResolution = 1000;
-
-	/** The yelp entropy file name. */
-	public static String yelpEntropyFileName = "dataset/real/yelp/yelp_entropy.txt";
-
-	/** The yelp task file name prefix. */
-	public static String yelpTaskFileNamePrefix = "dataset/real/yelp/task/yelp_tasks";
-
-	/** The yelp worker file name prefix. */
-	public static String yelpWorkerFileNamePrefix = "dataset/real/yelp/worker/yelp_workers";
-
-	// real dataset gowalla
-	/** The gowalla resolution. */
-	public static int gowallaResolution = 50000; // 0.00002 is approximately
-													// 30x30 metres
-	/** The gowalla file name. */
-	public static String gowallaFileName = "dataset/real/gowalla/gowalla_totalCheckins.txt";
-
-	/** The gowalla file name_ ca. */
-	public static String gowallaFileName_CA = "dataset/real/gowalla/gowalla_CA";
-
-	/** The gowalla file name_ sa. */
-	public static String gowallaFileName_SA = "dataset/real/gowalla/gowalla_totalCheckins_SA.txt";
-
-	/** The gowalla entropy file name. */
-	public static String gowallaEntropyFileName = "dataset/real/gowalla/gowalla_entropy.txt";
-
-	/** The gowalla task file name prefix. */
-	public static String gowallaTaskFileNamePrefix = "dataset/real/gowalla/task/gowalla_tasks";
-
-	/** The gowalla worker file name prefix. */
-	public static String gowallaWorkerFileNamePrefix = "dataset/real/gowalla/worker/gowalla_workers";
-
-	public static String gowallaFileName_CA_loc = "dataset/real/gowalla/gowalla_CA.dat";
-
-	/** Foursquare */
-	public static String foursquareTaskFileNamePrefix = "dataset/real/foursquare/task/foursquare_tasks";
-
-	public static String foursquareWorkerFileNamePrefix = "dataset/real/foursquare/worker/foursquare_workers";
 
 	// synthetic dataset
 	/** The skewed resolution. */

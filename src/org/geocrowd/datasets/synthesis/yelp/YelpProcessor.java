@@ -24,10 +24,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-import org.geocrowd.common.crowdsource.GenericWorker;
+import org.geocrowd.common.crowd.GenericWorker;
 import org.geocrowd.common.utils.Utils;
-import org.geocrowd.datasets.Parser;
-import org.geocrowd.datasets.dtype.Point;
+import org.geocrowd.datasets.params.YelpConstants;
+import org.geocrowd.datasets.synthetic.Parser;
+import org.geocrowd.dtype.Point;
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 
@@ -1033,11 +1034,11 @@ public class YelpProcessor {
      */
 	public static void process_TI() {
 		ArrayList<GenericWorker> workerList = new ArrayList<>();
-		Parser.parseSpecializedWorkers(YelpConstants.YelpWorker, workerList);
+		Parser.parseExpertWorkers(YelpConstants.YelpWorker, workerList);
 		
 		HashMap<String, GenericWorker> workers = new HashMap<String, GenericWorker>();
 		for (GenericWorker w : workerList)
-			workers.put(w.getUserID(), w);
+			workers.put(w.getId(), w);
 		
 		StringBuilder sb1 = new StringBuilder();
 		StringBuilder sb2 = new StringBuilder();
@@ -1045,25 +1046,25 @@ public class YelpProcessor {
 			sb1.delete(0, sb1.length());
 			sb2.delete(0, sb2.length());
 			ArrayList<GenericWorker> wl = new ArrayList<>();
-			Parser.parseSpecializedWorkers(YelpConstants.SplitWorkerByTime + String.format("%04d", i) + YelpConstants.suffix, wl);
+			Parser.parseExpertWorkers(YelpConstants.SplitWorkerByTime + String.format("%04d", i) + YelpConstants.suffix, wl);
 			
 			for (GenericWorker w : wl) {
-				if (workers.containsKey(w.getUserID()))
-					workers.put(w.getUserID(), w);
+				if (workers.containsKey(w.getId()))
+					workers.put(w.getId(), w);
 				
 				/**
 				 * to remove [0,0] coordinates which may cause problems
 				 */
-				if (w.getLatitude() == 0 || w.getLongitude() == 0)
+				if (w.getLat() == 0 || w.getLng() == 0)
 					continue;
-				sb1.append(w.getLatitude() + "\t" + w.getLongitude() + "\n");
+				sb1.append(w.getLat() + "\t" + w.getLng() + "\n");
 			}
 			
 			//	dump current workers to file
 			for (GenericWorker w : workers.values()) {
-				if (w.getLatitude() == 0 || w.getLongitude() == 0)
+				if (w.getLat() == 0 || w.getLng() == 0)
 					continue;
-				String loc = w.getLatitude() + "\t" + w.getLongitude() + "\n";
+				String loc = w.getLat() + "\t" + w.getLng() + "\n";
 				sb2.append(loc);
 			}
 			

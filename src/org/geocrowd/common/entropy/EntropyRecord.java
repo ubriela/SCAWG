@@ -1,15 +1,15 @@
 /*******************************************************************************
-* @ Year 2013
-* This is the source code of the following papers. 
-* 
-* 1) Geocrowd: A Server-Assigned Crowdsourcing Framework. Hien To, Leyla Kazemi, Cyrus Shahabi.
-* 
-* 
-* Please contact the author Hien To, ubriela@gmail.com if you have any question.
-*
-* Contributors:
-* Hien To - initial implementation
-*******************************************************************************/
+ * @ Year 2013
+ * This is the source code of the following papers. 
+ * 
+ * 1) Geocrowd: A Server-Assigned Crowdsourcing Framework. Hien To, Leyla Kazemi, Cyrus Shahabi.
+ * 
+ * 
+ * Please contact the author Hien To, ubriela@gmail.com if you have any question.
+ *
+ * Contributors:
+ * Hien To - initial implementation
+ *******************************************************************************/
 package org.geocrowd.common.entropy;
 
 // TODO: Auto-generated Javadoc
@@ -21,21 +21,21 @@ package org.geocrowd.common.entropy;
  *         location entropy for each grid cell
  */
 public class EntropyRecord {
-	
-	/** The entropy. */
-	private double entropy;
-	
+
 	/** The coord. */
 	private Coord coord;
 	
-	/** The worker no. */
-	private int workerNo; // number of people chosen as workers; starts with 0
+	/** The entropy. */
+	private double entropy;
+
+	/** The user count. */
+	private int userCount; // number of people chosen as workers; starts with 0
 							// and is density as max
 
 	/**
-							 * Instantiates a new entropy record.
-							 */
-							public EntropyRecord() {
+	 * Instantiates a new entropy record.
+	 */
+	public EntropyRecord() {
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class EntropyRecord {
 	public EntropyRecord(double d, Coord coord) {
 		entropy = d;
 		this.coord = coord;
-		workerNo = 0;
+		userCount = 0;
 	}
 
 	/**
@@ -75,15 +75,15 @@ public class EntropyRecord {
 	 * 
 	 * @return the worker no
 	 */
-	public int getWorkerNo() {
-		return workerNo;
+	public int getUserCount() {
+		return userCount;
 	}
 
 	/**
 	 * Inc worker no.
 	 */
-	public void incWorkerNo() {
-		workerNo++;
+	public void incUserCount() {
+		userCount++;
 	}
 
 	/**

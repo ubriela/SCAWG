@@ -6,9 +6,11 @@ import java.util.Hashtable;
 
 import org.geocrowd.DatasetEnum;
 import org.geocrowd.GeocrowdConstants;
-import org.geocrowd.common.crowdsource.SpecializedWorker;
+import org.geocrowd.common.crowd.ExpertWorker;
 import org.geocrowd.common.entropy.Coord;
+import org.geocrowd.common.entropy.EntropyUtility;
 import org.geocrowd.common.entropy.Observation;
+import org.geocrowd.datasets.params.GowallaConstants;
 import org.geocrowd.datasets.synthesis.gowalla.GowallaProcessor;
 import org.junit.Test;
 
@@ -27,10 +29,11 @@ public class GowallaParserTest {
 		// compute occurrences of each location id from Gowalla
 		// each location id is associated with a grid 
 		Hashtable<Integer, ArrayList<Observation>> occurances = prep
-				.readRealEntropyData(GeocrowdConstants.gowallaFileName_CA);
+				.readRealEntropyData(GowallaConstants.gowallaFileName_CA);
 		
 		// compute entropy of each location id 
-		prep.computeLocationEntropy(occurances);
+		EntropyUtility.computeLocationEntropy(occurances, 
+				GowallaConstants.gowallaEntropyFileName);
 		
 		// compute index (row, col) of each location id
 		prep.debug();
@@ -50,8 +53,8 @@ public class GowallaParserTest {
 		prep.createGrid();
 
 		// generating workers from Gowalla
-		Hashtable<Date, ArrayList<SpecializedWorker>> hashTable = prep
-				.generateRealWorkers(GeocrowdConstants.gowallaFileName_CA);
+		Hashtable<Date, ArrayList<ExpertWorker>> hashTable = prep
+				.generateRealWorkers(GowallaConstants.gowallaFileName_CA);
 		prep.saveRealWorkersMax(hashTable);
 		
 //		prep.saveLocationDensity(prep.computeLocationDensity());
@@ -88,8 +91,10 @@ public class GowallaParserTest {
 		GowallaProcessor prep = new GowallaProcessor();
 		GowallaProcessor.DATA_SET = DatasetEnum.GOWALLA;
 		
-		prep.filterInput(GeocrowdConstants.gowallaFileName_CA, 32.1713906, -124.3041035, 41.998434033, -114.0043464333);
-
+//		prep.filterInput(GeocrowdConstants.gowallaFileName_CA, 32.1713906, -124.3041035, 41.998434033, -114.0043464333);
+		
+		prep.filterInput("dataset/real/gowalla/gowalla_sample", 7.841649, -176.037659, 33.575540, -118.176210);
+		prep.extractCoords("dataset/real/gowalla/gowalla_sample", 100);
 		prep.computeBoundary();
 	}
 }

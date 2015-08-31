@@ -12,7 +12,6 @@
 *******************************************************************************/
 package org.geocrowd.datasets.synthesis.yelp;
 
-import java.util.Iterator;
 
 
 // TODO: Auto-generated Javadoc

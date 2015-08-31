@@ -9,11 +9,10 @@ import java.util.Vector;
 import org.geocrowd.Distribution1DEnum;
 import org.geocrowd.Distribution2DEnum;
 import org.geocrowd.WTArrivalEnum;
-import org.geocrowd.datasets.dtype.Rectangle;
-import org.geocrowd.datasets.plot.ScatterChartSample;
-import org.geocrowd.datasets.synthetic.DatasetGenerator;
+import org.geocrowd.datasets.synthetic.SpatialDistGenerator;
 import org.geocrowd.datasets.synthetic.InstancesGenerator;
 import org.geocrowd.datasets.synthetic.WTCountGenerator;
+import org.geocrowd.dtype.Rectangle;
 import org.junit.Test;
 
 /**

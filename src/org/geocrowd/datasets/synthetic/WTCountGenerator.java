@@ -1,15 +1,10 @@
 package org.geocrowd.datasets.synthetic;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Vector;
 
 import org.apache.commons.math3.distribution.PoissonDistribution;
 import org.geocrowd.WTArrivalEnum;
 import org.geocrowd.common.utils.Utils;
-import org.geocrowd.datasets.dtype.Range;
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 public class WTCountGenerator {
 

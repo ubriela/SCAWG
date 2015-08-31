@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.apache.commons.math3.distribution.ZipfDistribution;
+
 
 /**
  * This class provides various methods for creating different types of zipf
@@ -29,14 +31,14 @@ public class ZipfGenerator {
 		// TODO Auto-generated method stub
 		HashSet<Double> values = new HashSet<Double>();
 		ZipfDistribution zipf = new ZipfDistribution(2, 1);
-		double factor = 1 / zipf.getProbability(n);
+		double factor = 1 / zipf.probability(n);
 		for (int i = 1; i <= n; i++) {
 			if (isInteger) {
-				double val = (double) Math.round(zipf.getProbability(i) * factor);
+				double val = (double) Math.round(zipf.probability(i) * factor);
 				values.add(val);
 			}
 			else
-				values.add(zipf.getProbability(i) * factor);
+				values.add(zipf.probability(i) * factor);
 		}
 		return values;
 	}

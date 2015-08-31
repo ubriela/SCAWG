@@ -22,21 +22,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import org.geocrowd.DatasetEnum;
-import org.geocrowd.Distribution1DEnum;
 import org.geocrowd.GeocrowdConstants;
-import org.geocrowd.common.crowdsource.SpecializedTask;
-import org.geocrowd.common.crowdsource.SpecializedWorker;
+import org.geocrowd.WorkerType;
+import org.geocrowd.common.crowd.ExpertWorker;
+import org.geocrowd.common.crowd.WorkerFactory;
+import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.common.entropy.Coord;
+import org.geocrowd.common.entropy.EntropyUtility;
 import org.geocrowd.common.entropy.Observation;
 import org.geocrowd.common.utils.Utils;
-import org.geocrowd.datasets.GenericProcessor;
-import org.geocrowd.datasets.dtype.MBR;
-import org.geocrowd.datasets.dtype.Point;
-import org.geocrowd.datasets.dtype.PointTime;
-import org.geocrowd.datasets.dtype.Range;
+import org.geocrowd.datasets.params.GowallaConstants;
+import org.geocrowd.datasets.synthetic.GenericProcessor;
 import org.geocrowd.datasets.synthetic.UniformGenerator;
-import org.geocrowd.datasets.synthetic.WorkerIDGenerator;
+import org.geocrowd.dtype.Point;
+import org.geocrowd.dtype.PointTime;
+import org.geocrowd.dtype.Range;
 
 /**
  * The Class PreProcess.
@@ -61,7 +61,7 @@ public class GowallaProcessor extends GenericProcessor {
 	public void computeBoundary() {
 		try {
 			FileReader reader = new FileReader(
-					GeocrowdConstants.gowallaFileName_CA);
+					GowallaConstants.gowallaFileName_CA);
 			BufferedReader in = new BufferedReader(reader);
 			int cnt = 0;
 			while (in.ready()) {
@@ -88,40 +88,6 @@ public class GowallaProcessor extends GenericProcessor {
 		dumpBoundary();
 	}
 
-	/**
-	 * Compute location entropy for each location and save into a file.
-	 * 
-	 * @param hashTable
-	 *            a list of locations with corresponding entropy
-	 */
-	public void computeLocationEntropy(
-			Hashtable<Integer, ArrayList<Observation>> hashTable) {
-		try {
-			FileWriter writer = new FileWriter(
-					GeocrowdConstants.gowallaEntropyFileName);
-			BufferedWriter out = new BufferedWriter(writer);
-
-			Iterator<Integer> itr = hashTable.keySet().iterator();
-			while (itr.hasNext()) {
-				int pointId = itr.next();
-				ArrayList<Observation> obs = hashTable.get(pointId);
-				int totalObservation = 0;
-				double entropy = 0;
-				for (Observation o : obs) {
-					totalObservation += o.getObservationCount();
-				}
-				for (Observation o : obs) {
-					int observeCount = o.getObservationCount();
-					double p = (double) observeCount / totalObservation;
-					entropy -= p * Math.log(p) / Math.log(2);
-				}
-				out.write(pointId + "," + entropy + "\n");
-			}
-			out.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Compute sync location density.
@@ -132,17 +98,18 @@ public class GowallaProcessor extends GenericProcessor {
 	public Hashtable<Integer, Hashtable<Integer, Integer>> computeLocationDensity() {
 		String workerFilePath = Utils.datasetToWorkerPath(DATA_SET);
 		Hashtable<Integer, Hashtable<Integer, Integer>> densities = new Hashtable<Integer, Hashtable<Integer, Integer>>();
-		
+
 		StringBuffer sb = new StringBuffer();
-		
+
 		for (int i = 0; i < GeocrowdConstants.TIME_INSTANCE; i++) {
 			try {
 				FileReader file = new FileReader(workerFilePath + i + ".txt");
 				BufferedReader in = new BufferedReader(file);
-				
-				FileWriter writer = new FileWriter(Utils.datasetToWorkerPointPath() + i + ".txt");
+
+				FileWriter writer = new FileWriter(
+						Utils.datasetToWorkerPointPath() + i + ".txt");
 				BufferedWriter out = new BufferedWriter(writer);
-				
+
 				while (in.ready()) {
 					String line = in.readLine();
 					String[] parts = line.split(",");
@@ -163,24 +130,24 @@ public class GowallaProcessor extends GenericProcessor {
 						densities.put(row, rows);
 					}
 				}
-				
+
 				out.write(sb.toString());
 				out.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return densities;
 	}
-	
+
 	/**
 	 * Compute sync location density.
 	 * 
 	 * @return the hashtable
 	 */
 	public Hashtable<Integer, Hashtable<Integer, Integer>> computeLocationDensityFromFile() {
-		String filePath = GeocrowdConstants.gowallaFileName_CA_loc;
+		String filePath = GowallaConstants.gowallaFileName_CA_loc;
 
 		Hashtable<Integer, Hashtable<Integer, Integer>> densities = new Hashtable<Integer, Hashtable<Integer, Integer>>();
 		try {
@@ -215,9 +182,9 @@ public class GowallaProcessor extends GenericProcessor {
 	 * Extract coordinate (only) from datafile.
 	 * 
 	 * @param filename
-	 *            the filename
+	 * @param sampleRate
 	 */
-	public void extractCoords(String filename) {
+	public void extractCoords(String filename, int sampleRate) {
 		try {
 			FileReader reader = new FileReader(filename);
 			BufferedReader in = new BufferedReader(reader);
@@ -228,8 +195,10 @@ public class GowallaProcessor extends GenericProcessor {
 				String[] parts = line.split("\\s");
 				Double lat = Double.parseDouble(parts[2]);
 				Double lng = Double.parseDouble(parts[3]);
-				sb.append(lat + "\t" + lng + "\n");
-				cnt++;
+				if (Math.random() < sampleRate / 100.0) {
+					sb.append(lat + "\t" + lng + "\n");
+					cnt++;
+				}
 			}
 
 			FileWriter writer = new FileWriter(filename + ".dat");
@@ -295,7 +264,7 @@ public class GowallaProcessor extends GenericProcessor {
 			while (it.hasNext()) {
 				Integer t = it.next();
 				ArrayList<Point> pts = data.get(t);
-				MBR mbr = MBR.computeMBR(pts);
+				WorkingRegion mbr = new WorkingRegion(Utils.computeMBR(pts));
 				double d = mbr.diagonalLength();
 				sum += d;
 				count++;
@@ -390,7 +359,9 @@ public class GowallaProcessor extends GenericProcessor {
 			while (it.hasNext()) {
 				Integer t = it.next();
 				ArrayList<PointTime> pts = data.get(t);
-				MBR mbr = MBR.computeMBR2(pts);
+				ArrayList<Point> pts_t = new ArrayList<Point>(pts);
+				WorkingRegion mbr = new WorkingRegion(Utils.computeMBR(pts_t));
+
 				userLocs.put(
 						t,
 						new PointTime(t, 0,
@@ -440,7 +411,8 @@ public class GowallaProcessor extends GenericProcessor {
 						continue;
 
 					updateCount++;
-					MBR mbr = MBR.computeMBR2(new_locs);
+					ArrayList<Point> pts_t = new ArrayList<Point>(new_locs);
+					WorkingRegion mbr = new WorkingRegion(Utils.computeMBR(pts_t));
 
 					PointTime p = new PointTime(key, 0,
 							(mbr.getMaxLat() + mbr.getMinLat()) / 2.0,
@@ -503,7 +475,7 @@ public class GowallaProcessor extends GenericProcessor {
 		System.out.println("Filtering location data...");
 		try {
 			FileReader reader = new FileReader(
-					GeocrowdConstants.gowallaFileName);
+					GowallaConstants.gowallaFileName);
 			BufferedReader in = new BufferedReader(reader);
 			FileWriter writer = new FileWriter(filename);
 			BufferedWriter out = new BufferedWriter(writer);
@@ -547,65 +519,68 @@ public class GowallaProcessor extends GenericProcessor {
 	 *            the datasetfile
 	 * @return the hashtable
 	 */
-	public Hashtable<Date, ArrayList<SpecializedWorker>> generateRealWorkers(
+	public Hashtable<Date, ArrayList<ExpertWorker>> generateRealWorkers(
 			String datasetfile) {
-		Hashtable<Date, ArrayList<SpecializedWorker>> hashTable = new Hashtable();
+		Hashtable<Date, ArrayList<ExpertWorker>> hashTable = new Hashtable();
 		try {
 			FileReader reader = new FileReader(
-					GeocrowdConstants.gowallaFileName_CA);
+					GowallaConstants.gowallaFileName_CA);
 			BufferedReader in = new BufferedReader(reader);
 			int cnt = 0;
 			while (in.ready()) {
 				String line = in.readLine();
 				String[] parts = line.split(delimiter.toString());
-				String userID = parts[0];
 				String[] DateTimeStr = parts[1].split("T");
 				Date date = Date.valueOf(DateTimeStr[0]);
 				Double lat = Double.parseDouble(parts[2]);
 				Double lng = Double.parseDouble(parts[3]);
 
 				// init MBR of each worker
-				MBR mbr = new MBR(lat - 2 / resolution, lng - 2 / resolution,
+				WorkingRegion mbr = new WorkingRegion(lat - 2 / resolution, lng - 2 / resolution,
 						lat + 2 / resolution, lng + 2 / resolution);
 
 				// make sure the MBR is within the boundary
-				if (mbr.minLat < minLat)
-					mbr.minLat = minLat;
-				if (mbr.maxLat > maxLat)
-					mbr.maxLat = maxLat;
-				if (mbr.minLng < minLng)
-					mbr.minLng = minLng;
-				if (mbr.maxLng > maxLng)
-					mbr.maxLng = maxLng;
-				Integer pointID = Integer.parseInt(parts[4]);
+				if (mbr.getMinLat() < minLat)
+					mbr.setMinLat(minLat);
+				if (mbr.getMaxLat() > maxLat)
+					mbr.setMaxLat(maxLat);
+				if (mbr.getMinLng() < minLng)
+					mbr.setMinLng(minLng);
+				if (mbr.getMaxLng() > maxLng)
+					mbr.setMaxLng(maxLng);
+//				Integer pointID = Integer.parseInt(parts[4]);
 				int exp = (int) UniformGenerator.randomValue(new Range(0,
-						GeocrowdConstants.TaskTypeNo), true);
-				SpecializedWorker w = new SpecializedWorker(userID, lat, lng,
-						0, mbr);
+						GeocrowdConstants.TaskCategoryNo), true);
+				ExpertWorker w = (ExpertWorker) WorkerFactory.getWorker(WorkerType.EXPERT);
+				w.setId(parts[0]);
+				w.setLat(lat);
+				w.setLng(lng);
+				w.setCapacity(0);
+				w.setMbr(mbr);
 				w.addExpertise(exp);
 				if (!hashTable.containsKey(date)) {
-					ArrayList<SpecializedWorker> workers = new ArrayList<SpecializedWorker>();
+					ArrayList<ExpertWorker> workers = new ArrayList<ExpertWorker>();
 					workers.add(w);
 					hashTable.put(date, workers);
 				} else {
-					ArrayList<SpecializedWorker> workers = hashTable.get(date);
+					ArrayList<ExpertWorker> workers = hashTable.get(date);
 					boolean found = false; // check if the worker is already in
 											// the worker list, if yes -->
 											// update his maxTass and R
-					for (SpecializedWorker o : workers) {
-						if (o.getUserID().equals(userID)) {
+					for (ExpertWorker o : workers) {
+						if (o.getId().equals(w.getId())) {
 							o.incMaxTaskNo(); // set maxTask as the number of
 												// check-ins
 
 							// set working region R of each worker as MBR of his
 							// check-ins locations
-							if (lat < o.getMBR().minLat)
+							if (lat < o.getMbr().getMinLat())
 								o.setMinLat(lat);
-							if (lat > o.getMBR().maxLat)
+							if (lat > o.getMbr().getMaxLat())
 								o.setMaxLat(lat);
-							if (lng < o.getMBR().minLng)
+							if (lng < o.getMbr().getMinLng())
 								o.setMinLng(lng);
-							if (lng > o.getMBR().maxLng)
+							if (lng > o.getMbr().getMaxLng())
 								o.setMaxLng(lng);
 
 							found = true;
@@ -623,7 +598,6 @@ public class GowallaProcessor extends GenericProcessor {
 		return hashTable;
 	}
 
-
 	/**
 	 * Used as an input for saveLocationEntropy.
 	 * 
@@ -633,7 +607,7 @@ public class GowallaProcessor extends GenericProcessor {
 		Hashtable hashTable = new Hashtable();
 		try {
 			FileReader reader = new FileReader(
-					GeocrowdConstants.gowallaFileName_CA);
+					GowallaConstants.gowallaFileName_CA);
 			BufferedReader in = new BufferedReader(reader);
 			int cnt = 0;
 			while (in.ready()) {
@@ -714,7 +688,6 @@ public class GowallaProcessor extends GenericProcessor {
 		return hashTable;
 	}
 
-	
 	/**
 	 * Save what location in what grid and its corresponding location entropy,
 	 * the entropy information is get from a file which was generated before.
@@ -725,10 +698,10 @@ public class GowallaProcessor extends GenericProcessor {
 	public void saveLocationEntropy(Hashtable<Integer, Coord> hashTable) {
 		try {
 			FileReader reader = new FileReader(
-					GeocrowdConstants.gowallaEntropyFileName);
+					GowallaConstants.gowallaEntropyFileName);
 			BufferedReader in = new BufferedReader(reader);
 
-			String entropyPath = Utils.datasetToEntropyPath(DATA_SET);
+			String entropyPath = EntropyUtility.datasetToEntropyPath(DATA_SET);
 			FileWriter writer = new FileWriter(entropyPath);
 			BufferedWriter out = new BufferedWriter(writer);
 
@@ -756,7 +729,7 @@ public class GowallaProcessor extends GenericProcessor {
 	 *            the hash table
 	 */
 	public void saveRealWorkers(
-			Hashtable<Date, ArrayList<SpecializedWorker>> hashTable) {
+			Hashtable<Date, ArrayList<ExpertWorker>> hashTable) {
 		try {
 			// sort key and iterate based on key
 			List<Date> dates = new ArrayList<Date>(hashTable.keySet());
@@ -772,7 +745,7 @@ public class GowallaProcessor extends GenericProcessor {
 			for (Date date : dates) {
 				if (dayCnt == 0) {
 					FileWriter writer = new FileWriter(
-							GeocrowdConstants.gowallaWorkerFileNamePrefix
+							GowallaConstants.gowallaWorkerFileNamePrefix
 									+ instanceCnt.toString() + ".txt");
 					out = new BufferedWriter(writer);
 				} else if (dayCnt == daysPerInstance) {
@@ -786,8 +759,8 @@ public class GowallaProcessor extends GenericProcessor {
 
 				dayCnt++;
 
-				ArrayList<SpecializedWorker> workers = hashTable.get(date);
-				for (SpecializedWorker o : workers) {
+				ArrayList<ExpertWorker> workers = hashTable.get(date);
+				for (ExpertWorker o : workers) {
 					out.write(o.toStr() + "\n");
 					workerCount++;
 				}
@@ -807,7 +780,7 @@ public class GowallaProcessor extends GenericProcessor {
 	 *            the hash table
 	 */
 	public void saveRealWorkersMax2(
-			Hashtable<Date, ArrayList<SpecializedWorker>> hashTable) {
+			Hashtable<Date, ArrayList<ExpertWorker>> hashTable) {
 		try {
 			// sort key and iterate based on key
 			List<Date> dates = new ArrayList<Date>(hashTable.keySet());
@@ -824,7 +797,7 @@ public class GowallaProcessor extends GenericProcessor {
 
 				if (workerCnt == 0) {
 					FileWriter writer = new FileWriter(
-							GeocrowdConstants.gowallaWorkerFileNamePrefix
+							GowallaConstants.gowallaWorkerFileNamePrefix
 									+ instanceCnt.toString() + ".txt");
 					out = new BufferedWriter(writer);
 				} else if (workerCnt > GeocrowdConstants.WorkerNo) {
@@ -837,8 +810,8 @@ public class GowallaProcessor extends GenericProcessor {
 
 				workerCnt++;
 
-				ArrayList<SpecializedWorker> workers = hashTable.get(date);
-				for (SpecializedWorker o : workers) {
+				ArrayList<ExpertWorker> workers = hashTable.get(date);
+				for (ExpertWorker o : workers) {
 					out.write(o.toStr() + "\n");
 					workerCnt++;
 				}
@@ -858,7 +831,7 @@ public class GowallaProcessor extends GenericProcessor {
 	 *            the hash table
 	 */
 	public void saveRealWorkersMax(
-			Hashtable<Date, ArrayList<SpecializedWorker>> hashTable) {
+			Hashtable<Date, ArrayList<ExpertWorker>> hashTable) {
 		try {
 			// sort key and iterate based on key
 			List<Date> dates = new ArrayList<Date>(hashTable.keySet());
@@ -874,13 +847,13 @@ public class GowallaProcessor extends GenericProcessor {
 					continue;
 
 				FileWriter writer = new FileWriter(
-						GeocrowdConstants.gowallaWorkerFileNamePrefix
+						GowallaConstants.gowallaWorkerFileNamePrefix
 								+ instanceCnt.toString() + ".txt");
 				out = new BufferedWriter(writer);
 				Integer workerCnt = 0;
 
-				ArrayList<SpecializedWorker> workers = hashTable.get(date);
-				for (SpecializedWorker o : workers) {
+				ArrayList<ExpertWorker> workers = hashTable.get(date);
+				for (ExpertWorker o : workers) {
 					out.write(o.toStr() + "\n");
 					workerCnt++;
 				}

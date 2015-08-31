@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Vector;
 
-import org.geocrowd.datasets.dtype.Point;
-import org.geocrowd.datasets.dtype.WeightedPoint;
+import org.geocrowd.dtype.Point;
+import org.geocrowd.dtype.WeightedPoint;
 
 
 

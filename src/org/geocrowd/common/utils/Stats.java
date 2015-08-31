@@ -11,10 +11,9 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Vector;
 
-import org.geocrowd.datasets.dtype.Point;
-import org.geocrowd.datasets.dtype.ValueFreq;
-import org.geocrowd.datasets.dtype.ValueRank;
-import org.geocrowd.datasets.dtype.ValueScore;
+import org.geocrowd.dtype.ValueFreq;
+import org.geocrowd.dtype.ValueRank;
+import org.geocrowd.dtype.ValueScore;
 
 /**
  * Includes functions for statistic

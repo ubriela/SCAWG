@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.geocrowd.Distribution2DEnum;
 import org.geocrowd.WTArrivalEnum;
-import org.geocrowd.datasets.dtype.Range;
-import org.geocrowd.datasets.dtype.Rectangle;
+import org.geocrowd.dtype.Range;
+import org.geocrowd.dtype.Rectangle;
 
 public class InstancesGenerator {
 
@@ -52,24 +52,24 @@ public class InstancesGenerator {
 		System.out.println();
 		ArrayList<Long> seeds = new ArrayList<>();
 		// compute seed for gaussian cluster
-		DatasetGenerator.gaussianCluster = gaussianCluster;
+		SpatialDistGenerator.gaussianCluster = gaussianCluster;
 		for (int i = 0; i < gaussianCluster; i++)
 			seeds.add((long) UniformGenerator.randomValue(new Range(0, 1000000), true));
-		DatasetGenerator.seeds = seeds;
+		SpatialDistGenerator.seeds = seeds;
 		
 		for (int i = 0; i < instances; i++) {
 			// update time instance
-			DatasetGenerator.time = i;
+			SpatialDistGenerator.time = i;
 			
 			// worker
-			DatasetGenerator wdg = new DatasetGenerator(workerPath + "workers" + i + ".txt");
+			SpatialDistGenerator wdg = new SpatialDistGenerator(workerPath + "workers" + i + ".txt");
 			wdg.datatype = 0;
 			wdg.varianceX = boundary.getHighPoint().getX();
 			wdg.varianceY = boundary.getHighPoint().getY();
 			wdg.generate2DDataset(workerCounts.get(i), boundary, workerDist);
 			
 			// task
-			DatasetGenerator tdg = new DatasetGenerator(taskPath + "tasks" + i + ".txt");
+			SpatialDistGenerator tdg = new SpatialDistGenerator(taskPath + "tasks" + i + ".txt");
 			tdg.datatype = 1;
 			tdg.varianceX = boundary.getHighPoint().getX();
 			tdg.varianceY = boundary.getHighPoint().getY();

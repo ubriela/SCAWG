@@ -19,11 +19,11 @@ import java.util.Hashtable;
 import org.geocrowd.DatasetEnum;
 import org.geocrowd.Distribution1DEnum;
 import org.geocrowd.GeocrowdConstants;
-import org.geocrowd.common.crowdsource.SpecializedWorker;
+import org.geocrowd.common.crowd.ExpertWorker;
 import org.geocrowd.common.entropy.Coord;
 import org.geocrowd.common.entropy.Observation;
-import org.geocrowd.datasets.GenericProcessor;
 import org.geocrowd.datasets.synthesis.gowalla.GowallaProcessor;
+import org.geocrowd.datasets.synthetic.GenericProcessor;
 import org.junit.Test;
 
 // TODO: Auto-generated Javadoc

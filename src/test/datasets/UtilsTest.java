@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.Vector;
 
 import org.geocrowd.common.utils.Utils;
-import org.geocrowd.datasets.dtype.ValueFreq;
+import org.geocrowd.dtype.ValueFreq;
 import org.junit.Test;
 
 public class UtilsTest {

@@ -2,7 +2,7 @@ package test.datasets;
 
 import static org.junit.Assert.*;
 
-import org.geocrowd.datasets.synthetic.ProbabilityGenerator;
+import org.geocrowd.datasets.synthetic.RouletteWheelGenerator;
 import org.junit.Test;
 
 
@@ -13,7 +13,7 @@ public class ProbabilityGeneratorTest {
 		Double[] N = { new Double(1), new Double(2), new Double(3),
 				new Double(4) };
 		int[] M = new int[N.length];
-		ProbabilityGenerator<Double> pg = new ProbabilityGenerator(N);
+		RouletteWheelGenerator<Double> pg = new RouletteWheelGenerator(N);
 		for (int i = 0; i < 100000; i++)
 			M[pg.nextValue()]++;
 

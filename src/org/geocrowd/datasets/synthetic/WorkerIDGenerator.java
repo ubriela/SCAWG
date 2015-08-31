@@ -6,7 +6,7 @@ import java.util.Random;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.geocrowd.Distribution1DEnum;
 import org.geocrowd.common.utils.Utils;
-import org.geocrowd.datasets.dtype.Range;
+import org.geocrowd.dtype.Range;
 
 public class WorkerIDGenerator {
 	Distribution1DEnum dist;

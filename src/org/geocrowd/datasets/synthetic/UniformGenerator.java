@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
-import org.geocrowd.datasets.dtype.Point;
-import org.geocrowd.datasets.dtype.Range;
-import org.geocrowd.datasets.dtype.Rectangle;
+import org.geocrowd.dtype.Point;
+import org.geocrowd.dtype.Range;
+import org.geocrowd.dtype.Rectangle;
 
 // TODO: Auto-generated Javadoc
 /**

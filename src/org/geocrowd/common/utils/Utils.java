@@ -32,19 +32,13 @@ import java.util.Set;
 
 import org.geocrowd.DatasetEnum;
 import org.geocrowd.GeocrowdConstants;
-import org.geocrowd.common.crowdsource.GenericTask;
-import org.geocrowd.common.crowdsource.GenericWorker;
-import org.geocrowd.common.crowdsource.SensingTask;
-import org.geocrowd.common.crowdsource.SensingWorker;
-import org.geocrowd.datasets.dtype.GenericPoint;
-import org.geocrowd.datasets.dtype.Point;
-import org.geocrowd.datasets.dtype.ValueFreq;
-import org.paukov.combinatorics.Factory;
-import org.paukov.combinatorics.Generator;
-import org.paukov.combinatorics.ICombinatoricsVector;
-import org.tc33.jheatchart.HeatChart;
-
-import com.sun.org.apache.bcel.internal.Constants;
+//import org.geocrowd.common.crowd.WorkingRegion;
+import org.geocrowd.datasets.params.GowallaConstants;
+import org.geocrowd.datasets.params.YelpConstants;
+import org.geocrowd.dtype.GenericPoint;
+import org.geocrowd.dtype.Point;
+import org.geocrowd.dtype.Rectangle;
+import org.geocrowd.dtype.ValueFreq;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -663,38 +657,6 @@ public class Utils {
 		return "";
 	}
 
-	public static String datasetToEntropyPath(DatasetEnum dataset) {
-		switch (dataset) {
-		case GOWALLA:
-			return "dataset/real/gowalla/gowalla_entropy.txt";
-		case FOURSQUARE:
-			return "dataset/real/foursquare/foursquare_entropy.txt";
-		case YELP:
-			return "dataset/real/yelp/yelp_entropy.txt";
-		case SKEWED:
-			return "dataset/skew/skew_entropy.txt";
-		case UNIFORM:
-			return "dataset/uni/uni_entropy.txt";
-		}
-		return "";
-	}
-
-	public static String datasetToLocationDensity(DatasetEnum dataset) {
-		switch (dataset) {
-		case GOWALLA:
-			return "dataset/real/gowalla/gowalla_loc_density.txt";
-		case FOURSQUARE:
-			return "dataset/real/foursquare/foursquare_loc_density.txt";
-		case SKEWED:
-			return "dataset/skew/skew_loc_density.txt";
-		case UNIFORM:
-			return "dataset/uni/uni_loc_density.txt";
-		case SMALL_TEST:
-			return "dataset/small/small_loc_entropy.txt";
-		}
-		return "";
-	}
-
 	public static String datasetToBoundary(DatasetEnum dataset) {
 		switch (dataset) {
 		case FOURSQUARE:
@@ -717,7 +679,7 @@ public class Utils {
 		// System.out.println(dataset);
 		switch (dataset) {
 		case GOWALLA:
-			return GeocrowdConstants.gowallaResolution;
+			return GowallaConstants.gowallaResolution;
 		case SKEWED:
 			return GeocrowdConstants.skewedResolution;
 		case UNIFORM:
@@ -725,66 +687,40 @@ public class Utils {
 		case SMALL_TEST:
 			return GeocrowdConstants.smallResolution;
 		case YELP:
-			return GeocrowdConstants.yelpResolution;
+			return YelpConstants.yelpResolution;
 		}
 		return 0;
 	}
 	
 	/**
-	 * Euclidean distance between worker and task.
+	 * Compute mbr.
 	 * 
-	 * @param worker
-	 *            the worker
-	 * @param task
-	 *            the task
-	 * @return the double
+	 * @param points
+	 *            the points
+	 * @return the mbr
 	 */
-	public static double distanceWorkerTask(DatasetEnum dataset, GenericWorker worker, GenericTask task) {
-		if (dataset == DatasetEnum.GOWALLA || dataset == DatasetEnum.YELP
-				|| dataset == DatasetEnum.FOURSQUARE)
-			return worker.distanceToTask(task);
+	public static Rectangle computeMBR(ArrayList<Point> points) {
+		double minLat = Double.MAX_VALUE;
+		double maxLat = (-1) * Double.MAX_VALUE;
+		double minLng = Double.MAX_VALUE;
+		double maxLng = (-1) * Double.MAX_VALUE;
+		Iterator<Point> it = points.iterator();
+		while (it.hasNext()) {
+			Point pt = it.next();
+			Double lat = pt.getX();
+			Double lng = pt.getY();
 
-		// not geographical coordinates
-		double distance = Math.sqrt((worker.getLatitude() - task.getLat())
-				* (worker.getLatitude() - task.getLat())
-				+ (worker.getLongitude() - task.getLng())
-				* (worker.getLongitude() - task.getLng()));
-
-		// System.out.println(distance);
-		return distance;
-	}
-
-	/**
-	 * Distance-based utility
-	 * @param w
-	 * @param t
-	 * @return
-	 */
-	public static double utility(DatasetEnum dataset, GenericWorker w, SensingTask t) {
-		double dist = distanceWorkerTask(dataset, w, t);
-		if (GeocrowdConstants.UTILITY_FUNCTION == "zipf") {
-			int k = Math.max(
-					1,
-					(int) Math.floor(dist * GeocrowdConstants.ZIPF_STEPS
-							/ GeocrowdConstants.radius)); // rank
-			double val = zipf_pmf(GeocrowdConstants.ZIPF_STEPS, k, GeocrowdConstants.s)
-					* GeocrowdConstants.MU;
-//			System.out.println(k);
-//			System.out.println(val);
-			return val;
+			if (lat < minLat)
+				minLat = lat;
+			if (lat > maxLat)
+				maxLat = lat;
+			if (lng < minLng)
+				minLng = lng;
+			if (lng > maxLng)
+				maxLng = lng;
 		}
 
-		if (GeocrowdConstants.UTILITY_FUNCTION == "linear") {
-//			System.out.println(dist);
-			return Math.max(0, (1 - (dist + 0.0) / GeocrowdConstants.radius)
-					* GeocrowdConstants.MU);
-		}
-
-		if (GeocrowdConstants.UTILITY_FUNCTION == "const") {
-			return GeocrowdConstants.MU;
-		}
-
-		return GeocrowdConstants.MU;
+		return new Rectangle(minLat, minLng, maxLat, maxLng);
 	}
 
 	// http://en.wikipedia.org/wiki/Zipf's_law
