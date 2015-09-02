@@ -1,8 +1,5 @@
 /*******************************************************************************
  * @ Year 2013
- * This is the source code of the following papers. 
- * 
- * 1) Geocrowd: A Server-Assigned Crowdsourcing Framework. Hien To, Leyla Kazemi, Cyrus Shahabi.
  * 
  * 
  * Please contact the author Hien To, ubriela@gmail.com if you have any question.
@@ -24,6 +21,8 @@ import org.geocrowd.GeocrowdConstants;
  */
 public class GenericTask {
 
+	private double id;
+	
 	/** The lat. */
 	private double lat;
 
@@ -33,8 +32,8 @@ public class GenericTask {
 	/** The arrival time. */
 	private int arrivalTime;
 
-	/** The assigned. */
-	private int assigned = 0; // how many times this task is assigned
+	/** The expiry time. */
+	private int expiryTime;
 
 	/** The expired. */
 	private boolean expired = false;
@@ -46,6 +45,12 @@ public class GenericTask {
 	 * the required number of assigned workers
 	 */
 	private int k;
+
+	/**
+	 * how many times this task is assigned/performed. assigned = k means the
+	 * task is completed
+	 */
+	private int assigned = 0;
 
 	/**
 	 * Instantiates a new generic task.
@@ -99,8 +104,6 @@ public class GenericTask {
 	public double getLat() {
 		return lat;
 	}
-	
-	
 
 	public void setLat(double lat) {
 		this.lat = lat;
@@ -132,20 +135,6 @@ public class GenericTask {
 	 */
 	public void incAssigned() {
 		assigned++;
-	}
-
-	/**
-	 * check if the task is covered by a MBR.
-	 * 
-	 * @param mbr
-	 *            the mbr
-	 * @return true, if is covered by
-	 */
-	public boolean isCoveredBy(WorkingRegion mbr) {
-		if ((lat >= mbr.getMinLat()) && (lat <= mbr.getMaxLat()) && (lng >= mbr.getMinLng())
-				&& (lng <= mbr.getMaxLng()))
-			return true;
-		return false;
 	}
 
 	/**
@@ -197,4 +186,29 @@ public class GenericTask {
 	public int getK() {
 		return k;
 	}
+
+	/**
+	 * @return the expiryTime
+	 */
+	public int getExpiryTime() {
+		return expiryTime;
+	}
+
+	/**
+	 * @param expiryTime
+	 *            the expiryTime to set
+	 */
+	public void setExpiryTime(int expiryTime) {
+		this.expiryTime = expiryTime;
+	}
+
+	public double getId() {
+		return id;
+	}
+
+	public void setId(double id) {
+		this.id = id;
+	}
+	
+	
 }

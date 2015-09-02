@@ -8,7 +8,7 @@ package org.geocrowd.common.crowd;
  *
  * Each task has a reward upon completion
  */
-public class RewardTask extends ExpiringTask {
+public class RewardTask extends GenericTask {
 
     /**
      * The reward.
@@ -20,8 +20,8 @@ public class RewardTask extends ExpiringTask {
      *
      * @param reward the reward
      */
-    public RewardTask(int expiryTime, double reward) {
-    	super(expiryTime);
+    public RewardTask(double reward) {
+    	super();
         this.mReward = reward;
     }
 
@@ -33,8 +33,8 @@ public class RewardTask extends ExpiringTask {
      * @param entry the entry
      * @param ent the ent
      */
-    public RewardTask(double lt, double ln, int entry, int expiry, double ent, double reward) {
-        super(lt, ln, entry, expiry, ent);
+    public RewardTask(double lt, double ln, int entry, double ent, double reward) {
+        super(lt, ln, entry, ent);
         this.mReward = reward;
     }
 

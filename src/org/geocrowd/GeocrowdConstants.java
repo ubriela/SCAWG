@@ -55,7 +55,7 @@ public class GeocrowdConstants {
 
 	// shared parameters
 	/** The Task type no. */
-	public static double TaskCategoryNo = 0; // number of task categories/expertise
+	public static double TaskCategoryNo = 10; // number of task categories/expertise
 
 	/** The Max tasks per worker. */
 	public static int MaxTasksPerWorker = 20; // maximum # of tasks that a

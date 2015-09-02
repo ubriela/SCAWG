@@ -1,6 +1,6 @@
 package org.geocrowd;
 
-public enum WTArrivalEnum {
+public enum ArrivalRateEnum {
 	CONSTANT,
 	DECREASING,
 	INCREASING,

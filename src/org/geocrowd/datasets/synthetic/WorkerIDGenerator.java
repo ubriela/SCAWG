@@ -1,53 +1,66 @@
 package org.geocrowd.datasets.synthetic;
 
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Random;
 
+import jmetal.util.RandomGenerator;
+
 import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.ZipfDistribution;
 import org.geocrowd.Distribution1DEnum;
 import org.geocrowd.common.utils.Utils;
 import org.geocrowd.dtype.Range;
 
+/**
+ * We generate the workerid at a particular time snapshot based on how active
+ * the user is.
+ * 
+ * @author ubriela
+ *
+ */
 public class WorkerIDGenerator {
-	Distribution1DEnum dist;
-	int count = 0;
-	int min = 0;
-	int max = 0;
-	HashSet<Integer> distinct = new HashSet<>();
+	public int count = 0;
+	public double mean = 0.5;
+	public double st = 0.2;
+	public static Hashtable<Integer, Double> workerActiveness = new Hashtable<>();
+	RouletteWheelGenerator<Double> generator = null;
 
-	public WorkerIDGenerator(Distribution1DEnum dist, int count, int min,
-			int max) {
-		this.dist = dist;
+	public WorkerIDGenerator(Distribution1DEnum activenessDist, int count) {
 		this.count = count;
-		this.min = min;
-		this.max = max;
+
+		for (int workerId = 0; workerId < count; workerId++) {
+			double activeness = -1;
+			switch (activenessDist) {
+			case UNIFORM_1D: // uniform one-dimensional dataset
+				Random r = new Random(System.nanoTime());
+				activeness = r.nextDouble();
+				break;
+			case ZIFFIAN_1D: // zipf distribution
+				ZipfDistribution zipf = new ZipfDistribution(count, 1);
+				int rand = (int) UniformGenerator.randomValue(new Range(0,
+						count), true);
+				activeness = zipf.probability(rand);
+				break;
+			case GAUSSIAN_1D:
+				Random rd = new Random(System.nanoTime());
+				
+				while (activeness < 0 || activeness > 1)
+					activeness = mean + st * rd.nextGaussian();
+				break;
+			}
+			
+			workerActiveness.put(workerId, activeness);
+		}
+		
+		Double[] arr = new Double[workerActiveness.size()];
+		for (int i = 0; i < arr.length; i++)
+			arr[i] = workerActiveness.get(i);
+		generator = new RouletteWheelGenerator<Double>(arr);
 	}
 
 	public int nextWorkerId() {
-		int workerId = 0;
-		switch (dist) {
-		case UNIFORM_1D: // uniform one-dimensional dataset
-			Random r = new Random();
-			r.setSeed(System.nanoTime());
-			workerId = (int) Math.floor(r.nextDouble() * (max - min) + min);
-			break;
-		case ZIFFIAN_1D: // zipf distribution
-			int rand = (int) UniformGenerator.randomValue(new Range(0, max
-					- min), true);
-			workerId = (int) ((max - min) * Utils.zipf_pmf(count, rand, 1));
-			break;
-		case GAUSSIAN_1D:
-			NormalDistribution nd = new NormalDistribution((max - min) / 2,
-					(max - min) / 4);
-			while (true) {
-				workerId = (int) nd.sample();
-				if (workerId <= max && workerId >= min && !distinct.contains(workerId))
-					break;
-			}
-			break;
-		}
-		
-		distinct.add(workerId);
-		return workerId;
+		int idx = generator.nextValue();
+		return idx;
 	}
 }

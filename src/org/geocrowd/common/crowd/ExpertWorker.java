@@ -25,7 +25,7 @@ import java.util.Iterator;
 public class ExpertWorker extends RegionWorker {
 
 	/** The expertise. */
-	private HashSet<Integer> expertise = new HashSet<>();
+	private HashSet<Integer> expertiseSet = new HashSet<>();
 	
 	// init expertise with one value
 	/**
@@ -35,8 +35,8 @@ public class ExpertWorker extends RegionWorker {
 	 *            the value
 	 */
 	public ExpertWorker(int value) {
-		if (!expertise.contains(value))
-			expertise.add(value);
+		if (!expertiseSet.contains(value))
+			expertiseSet.add(value);
 	}
 	
 	
@@ -71,21 +71,15 @@ public class ExpertWorker extends RegionWorker {
 	 *            the exp
 	 */
 	public void addExpertise(int exp) {
-		expertise.add(exp);
+		expertiseSet.add(exp);
+	}
+	
+	
+
+	public HashSet<Integer> getExpertiseSet() {
+		return expertiseSet;
 	}
 
-	/**
-	 * Checks if is exact match.
-	 * 
-	 * @param t
-	 *            the t
-	 * @return true, if is exact match
-	 */
-	public boolean isExactMatch(ExpertTask t) {
-		if (expertise.contains(t.getCategory()))
-			return true;
-		return false;
-	}
 
 	/**
 	 * To str.
@@ -105,7 +99,7 @@ public class ExpertWorker extends RegionWorker {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		Iterator<Integer> it = expertise.iterator();
+		Iterator<Integer> it = expertiseSet.iterator();
 		while (it.hasNext()) {
 			sb.append(it.next());
 			sb.append(',');

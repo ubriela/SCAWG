@@ -12,7 +12,6 @@
 *******************************************************************************/
 package org.geocrowd.common.crowd;
 
-import org.geocrowd.common.utils.Utils;
 import org.geocrowd.dtype.Point;
 import org.geocrowd.dtype.Rectangle;
 
@@ -64,26 +63,6 @@ public class WorkingRegion extends Rectangle {
 		WorkingRegion mbr = new WorkingRegion(centerLat - (rangeX / 2), centerLng - (rangeY / 2),
 				centerLat + (rangeX / 2), centerLng + (rangeY / 2));
 		return mbr;
-	}
-	
-	/**
-	 * Area in geographical coord
-	 * 
-	 * @return the double
-	 */
-	public double areaGIS() {
-		double x = Utils.distance(getMinLat(), getMinLng(), getMaxLat(), getMinLng());
-		double y = Utils.distance(getMinLat(), getMinLng(), getMinLat(), getMaxLng());
-		return x*y;
-	}
-
-	/**
-	 * Diagonal length.
-	 * 
-	 * @return the double
-	 */
-	public double diagonalLength() {
-		return Utils.distance(getMinLat(), getMinLng(), getMaxLat(), getMaxLng());
 	}
 	
 	/**

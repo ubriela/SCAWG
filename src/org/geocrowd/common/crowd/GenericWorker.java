@@ -1,18 +1,16 @@
 /*******************************************************************************
-* @ Year 2013
-* This is the source code of the following papers. 
-* 
-* 1) Geocrowd: A Server-Assigned Crowdsourcing Framework. Hien To, Leyla Kazemi, Cyrus Shahabi.
-* 
-* 
-* Please contact the author Hien To, ubriela@gmail.com if you have any question.
-*
-* Contributors:
-* Hien To - initial implementation
-*******************************************************************************/
+ * @ Year 2013
+ * This is the source code of the following papers. 
+ * 
+ * 1) Geocrowd: A Server-Assigned Crowdsourcing Framework. Hien To, Leyla Kazemi, Cyrus Shahabi.
+ * 
+ * 
+ * Please contact the author Hien To, ubriela@gmail.com if you have any question.
+ *
+ * Contributors:
+ * Hien To - initial implementation
+ *******************************************************************************/
 package org.geocrowd.common.crowd;
-
-import org.geocrowd.common.utils.Utils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -21,19 +19,24 @@ import org.geocrowd.common.utils.Utils;
  * @author ubriela
  */
 public class GenericWorker {
-	
+
 	/** The user id. */
 	public String id;
-	
+
 	/** The lat. */
 	public double lat;
-	
+
 	/** The lng. */
 	public double lng;
-	
-	/** The maximum number of tasks the worker can perform. */
+
+	/** The maximum number of tasks the worker can perform per time instance. */
 	public int capacity;
-	
+
+	/**
+	 * The number indicate how active the worker is between 0 and 1. Active
+	 * workers are likely to travel and to perform tasks.
+	 */
+	public double activeness;
 
 	/**
 	 * Instantiates a new generic worker.
@@ -41,7 +44,7 @@ public class GenericWorker {
 	public GenericWorker() {
 		super();
 	}
-	
+
 	/**
 	 * Instantiates a new generic worker.
 	 * 
@@ -61,19 +64,6 @@ public class GenericWorker {
 		this.lng = lng;
 		this.capacity = capacity;
 	}
-	
-	/**
-	 * distance to a task in km.
-	 * 
-	 * @param worker
-	 *            the worker
-	 * @param task
-	 *            the task
-	 * @return the double
-	 */
-	public double distanceToTask(GenericTask task) {
-		return Utils.distance(lat,lng,task.getLat(),task.getLng());
-	}
 
 	/**
 	 * Gets the latitude.
@@ -83,7 +73,7 @@ public class GenericWorker {
 	public double getLat() {
 		return lat;
 	}
-	
+
 	/**
 	 * Gets the longitude.
 	 * 
@@ -92,10 +82,7 @@ public class GenericWorker {
 	public double getLng() {
 		return lng;
 	}
-	
-	
-	
-	
+
 	public void setId(String workerId) {
 		this.id = workerId;
 	}
@@ -118,10 +105,10 @@ public class GenericWorker {
 	 * @return the max task no
 	 */
 	public int getCapacity() {
-//		return 1;
+		// return 1;
 		return capacity;
 	}
-	
+
 	/**
 	 * Gets the user id.
 	 * 
@@ -130,12 +117,19 @@ public class GenericWorker {
 	public String getId() {
 		return id;
 	}
-	
+
 	/**
 	 * Inc max task no.
 	 */
-	public void incMaxTaskNo() {
+	public void incCapacity() {
 		capacity++;
 	}
-	
+
+	public double getActiveness() {
+		return activeness;
+	}
+
+	public void setActiveness(double activeness) {
+		this.activeness = activeness;
+	}
 }

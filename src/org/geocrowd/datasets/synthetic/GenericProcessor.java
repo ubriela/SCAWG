@@ -18,6 +18,7 @@ import org.geocrowd.common.crowd.TaskFactory;
 import org.geocrowd.common.crowd.WorkerFactory;
 import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.common.entropy.EntropyUtility;
+import org.geocrowd.common.utils.TaskUtility;
 import org.geocrowd.common.utils.Utils;
 import org.geocrowd.dtype.Range;
 
@@ -25,9 +26,7 @@ public class GenericProcessor {
 
 	public static Character delimiter = '\t';
 
-	public static Distribution1DEnum workerIdDist = Distribution1DEnum.UNIFORM_1D;
-	public WorkerIDGenerator idGenerator = new WorkerIDGenerator(workerIdDist,
-			1000, 0, 10000);
+	public Distribution1DEnum workerIdDist = Distribution1DEnum.UNIFORM_1D;
 
 	/** The min lat. */
 	public static double minLat = Double.MAX_VALUE;
@@ -128,7 +127,7 @@ public class GenericProcessor {
 		double x = Utils.distance(minLat, minLng, maxLat, minLng);
 		double y = Utils.distance(minLat, minLng, minLat, maxLng);
 		System.out.println("Area: " + x * y);
-		System.out.println("Region MBR size: " + mbr.diagonalLength());
+		System.out.println("Region MBR size: " + TaskUtility.diagonalLength(mbr));
 	}
 
 	/**
@@ -146,7 +145,6 @@ public class GenericProcessor {
 	 */
 	private void generateSyncWorkersFromDataPoints(String outputFile,
 			String inputFile, boolean isConstantMBR, boolean isConstantMaxT) {
-		int workerCount = 0;
 		double maxRangeX = (maxLat - minLat) * (GeocrowdConstants.MaxRangePerc);
 		double maxRangeY = (maxLng - minLng) * GeocrowdConstants.MaxRangePerc;
 		// generate worker id
@@ -158,7 +156,6 @@ public class GenericProcessor {
 			FileReader reader = new FileReader(inputFile);
 			BufferedReader in = new BufferedReader(reader);
 			while (in.ready()) {
-				workerCount++;
 				String line = in.readLine();
 				String[] parts = line.split(delimiter.toString());
 				int maxT = 0;
@@ -178,22 +175,28 @@ public class GenericProcessor {
 					rangeY = UniformGenerator.randomValue(new Range(0,
 							maxRangeY), false);
 				}
-				
+
 				int exp = (int) UniformGenerator.randomValue(new Range(0,
 						GeocrowdConstants.TaskCategoryNo), true);
-				ExpertWorker w = (ExpertWorker) WorkerFactory.getWorker(WorkerType.EXPERT);
+				ExpertWorker w = (ExpertWorker) WorkerFactory
+						.getWorker(WorkerType.EXPERT);
 				w.setLat(Double.parseDouble(parts[0]));
 				w.setLng(Double.parseDouble(parts[1]));
 				w.setCapacity(maxT);
-				WorkingRegion mbr = WorkingRegion.createMBR(w.getLat(), w.getLng(), rangeX, rangeY);
+				WorkingRegion mbr = WorkingRegion.createMBR(w.getLat(),
+						w.getLng(), rangeX, rangeY);
 				checkBoundaryMBR(mbr);
 				w.setMbr(mbr);
 				w.addExpertise(exp);
 
-				int workerId = idGenerator.nextWorkerId();
+				WorkerIDGenerator widGenerator = new WorkerIDGenerator(
+						workerIdDist, 1000);
+				int workerId = widGenerator.nextWorkerId();
+				w.setActiveness(widGenerator.workerActiveness.get(workerId));
 
-				sb.append(workerId + "," + w.getLat() + "," + w.getLng() + "," + w.getCapacity() + ","
-						+ "[" + mbr.getMinLat() + "," + mbr.getMinLng() + ","
+				sb.append(workerId + "," + w.getLat() + "," + w.getLng() + ","
+						+ w.getCapacity() + "," + w.getActiveness() + ",["
+						+ mbr.getMinLat() + "," + mbr.getMinLng() + ","
 						+ mbr.getMaxLat() + "," + mbr.getMaxLng() + "],[" + exp
 						+ "]\n");
 			}
@@ -223,16 +226,19 @@ public class GenericProcessor {
 			while (in.ready()) {
 				String line = in.readLine();
 				String[] parts = line.split(delimiter.toString());
-				int taskCategory = (int) UniformGenerator.randomValue(new Range(0,
-						GeocrowdConstants.TaskCategoryNo), true);
-				ExpertTask t = (ExpertTask) TaskFactory.getTask(TaskType.EXPERT);
+				int taskCategory = (int) UniformGenerator.randomValue(
+						new Range(0, GeocrowdConstants.TaskCategoryNo), true);
+				ExpertTask t = (ExpertTask) TaskFactory
+						.getTask(TaskType.EXPERT);
 				t.setLat(Double.parseDouble(parts[0]));
 				t.setLng(Double.parseDouble(parts[1]));
 				t.setArrivalTime(timeCounter);
 				t.setEntropy(-1);
 				t.setCategory(taskCategory);
 
-				out.write(t.getLat() + "," + t.getLng() + "," + t.getArrivalTime() + "," + t.getEntropy() + "," + t.getCategory() + "\n");
+				out.write(t.getLat() + "," + t.getLng() + ","
+						+ t.getArrivalTime() + "," + t.getEntropy() + ","
+						+ t.getCategory() + "\n");
 				taskCount++;
 			}
 			out.close();
@@ -537,6 +543,5 @@ public class GenericProcessor {
 		}
 		return regionOccurances;
 	}
-
 
 }

@@ -32,6 +32,11 @@ import java.util.Set;
 
 import org.geocrowd.DatasetEnum;
 import org.geocrowd.GeocrowdConstants;
+import org.geocrowd.common.crowd.ExpertTask;
+import org.geocrowd.common.crowd.ExpertWorker;
+import org.geocrowd.common.crowd.GenericTask;
+import org.geocrowd.common.crowd.GenericWorker;
+import org.geocrowd.common.crowd.WorkingRegion;
 //import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.datasets.params.GowallaConstants;
 import org.geocrowd.datasets.params.YelpConstants;

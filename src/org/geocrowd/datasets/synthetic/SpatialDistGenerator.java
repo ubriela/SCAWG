@@ -38,7 +38,7 @@ public class SpatialDistGenerator {
 	public static int time = 0;
 	public static int gaussianCluster = 4;
 	public static ArrayList<Long> seeds;
-	public static int datatype = 0;
+	public int distributionIndicator = 0;
 
 	private String filePath = "";
 	private Character delimiter = '\t';
@@ -84,7 +84,7 @@ public class SpatialDistGenerator {
 		
 		for (int c = 0; c < gaussianCluster; c++) {
 			Point mPoint = UniformGenerator.randomPoint(boundary, false,
-					seeds.get(c) + datatype);	// same centroid for all time instances
+					seeds.get(c) + distributionIndicator);	// same centroid for all time instances
 			double[] means = { mPoint.getX(), mPoint.getY() };
 			// mPoint.debug();
 			//System.out.println(boundary.getHighPoint().getX());

@@ -3,10 +3,10 @@ package org.geocrowd.datasets.synthetic;
 import java.util.ArrayList;
 
 import org.apache.commons.math3.distribution.PoissonDistribution;
-import org.geocrowd.WTArrivalEnum;
+import org.geocrowd.ArrivalRateEnum;
 import org.geocrowd.common.utils.Utils;
 
-public class WTCountGenerator {
+public class ArrivalRateGenerator {
 
 	public static int time_instances_per_cycle = 7;
 	public static int cosine_height_scale = 1;
@@ -19,7 +19,7 @@ public class WTCountGenerator {
 	 * @return
 	 */
 	public static ArrayList<Integer> generateCounts(int instances, int mean,
-			WTArrivalEnum arrival_f) {
+			ArrivalRateEnum arrival_f) {
 		ArrayList<Integer> counts = new ArrayList<>();
 
 		switch (arrival_f) {

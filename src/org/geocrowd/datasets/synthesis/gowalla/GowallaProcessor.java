@@ -30,6 +30,7 @@ import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.common.entropy.Coord;
 import org.geocrowd.common.entropy.EntropyUtility;
 import org.geocrowd.common.entropy.Observation;
+import org.geocrowd.common.utils.TaskUtility;
 import org.geocrowd.common.utils.Utils;
 import org.geocrowd.datasets.params.GowallaConstants;
 import org.geocrowd.datasets.synthetic.GenericProcessor;
@@ -265,7 +266,7 @@ public class GowallaProcessor extends GenericProcessor {
 				Integer t = it.next();
 				ArrayList<Point> pts = data.get(t);
 				WorkingRegion mbr = new WorkingRegion(Utils.computeMBR(pts));
-				double d = mbr.diagonalLength();
+				double d = TaskUtility.diagonalLength(mbr);
 				sum += d;
 				count++;
 				if (d > maxMBR)
@@ -569,7 +570,7 @@ public class GowallaProcessor extends GenericProcessor {
 											// update his maxTass and R
 					for (ExpertWorker o : workers) {
 						if (o.getId().equals(w.getId())) {
-							o.incMaxTaskNo(); // set maxTask as the number of
+							o.incCapacity(); // set maxTask as the number of
 												// check-ins
 
 							// set working region R of each worker as MBR of his
