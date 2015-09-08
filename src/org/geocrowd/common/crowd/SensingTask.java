@@ -16,7 +16,7 @@ package org.geocrowd.common.crowd;
 
 import java.util.Random;
 
-import org.geocrowd.GeocrowdConstants;
+import org.geocrowd.datasets.params.GeocrowdConstants;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -60,6 +60,10 @@ public class SensingTask extends GenericTask {
     	super();
 	}
 
+	public SensingTask(double lat, double lng) {
+		super(lat, lng);
+	}
+
 	/**
      * Gets the radius.
      *
@@ -78,4 +82,8 @@ public class SensingTask extends GenericTask {
         this.radius = radius;
     }
 
+	@Override
+	public String toString() {
+		return super.toString() + "," + getRadius();
+	}
 }

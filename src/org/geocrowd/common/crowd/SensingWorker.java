@@ -20,6 +20,10 @@ public class SensingWorker extends GenericWorker {
     	super();
 	}
 
+	public SensingWorker(double lat, double lng) {
+		super(lat, lng);
+	}
+
 	public int getOnlineTime() {
         return onlineTime;
     }

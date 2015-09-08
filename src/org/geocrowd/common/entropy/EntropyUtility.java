@@ -7,8 +7,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.geocrowd.DatasetEnum;
-import org.geocrowd.GeocrowdConstants;
 import org.geocrowd.common.utils.Utils;
+import org.geocrowd.datasets.params.GeocrowdConstants;
 
 /**
  * This class uses Mediator pattern to reduce communication complexity between multiple

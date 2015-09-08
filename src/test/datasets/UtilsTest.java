@@ -1,15 +1,31 @@
 package test.datasets;
 
-import static org.junit.Assert.*;
-
 import java.util.Vector;
 
+import org.geocrowd.WorkerType;
+import org.geocrowd.common.crowd.GenericWorker;
+import org.geocrowd.common.crowd.RegionWorker;
+import org.geocrowd.common.crowd.WorkerFactory;
+import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.common.utils.Utils;
 import org.geocrowd.dtype.ValueFreq;
 import org.junit.Test;
 
 public class UtilsTest {
 
+	@Test
+	public final void testWorker() {
+		GenericWorker w = new WorkerFactory().getWorker(WorkerType.REGION, 1, 1);
+		
+		System.out.println(w);
+		
+		RegionWorker sw = (RegionWorker)w;
+		sw.setMbr(new WorkingRegion(2, 2, 2, 2));
+		
+		System.out.println(sw);
+		System.out.println(w);
+	}
+	
 	@Test
 	public final void testBinarySearch() {
 		Utils util = new Utils();

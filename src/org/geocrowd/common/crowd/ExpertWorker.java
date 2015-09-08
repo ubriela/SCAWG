@@ -1,17 +1,16 @@
 /*******************************************************************************
-* @ Year 2013
-* This is the source code of the following papers. 
-* 
-* 1) Geocrowd: A Server-Assigned Crowdsourcing Framework. Hien To, Leyla Kazemi, Cyrus Shahabi.
-* 
-* 
-* Please contact the author Hien To, ubriela@gmail.com if you have any question.
-*
-* Contributors:
-* Hien To - initial implementation
-*******************************************************************************/
+ * @ Year 2013
+ * This is the source code of the following papers. 
+ * 
+ * 1) Geocrowd: A Server-Assigned Crowdsourcing Framework. Hien To, Leyla Kazemi, Cyrus Shahabi.
+ * 
+ * 
+ * Please contact the author Hien To, ubriela@gmail.com if you have any question.
+ *
+ * Contributors:
+ * Hien To - initial implementation
+ *******************************************************************************/
 package org.geocrowd.common.crowd;
-
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,7 +25,7 @@ public class ExpertWorker extends RegionWorker {
 
 	/** The expertise. */
 	private HashSet<Integer> expertiseSet = new HashSet<>();
-	
+
 	// init expertise with one value
 	/**
 	 * Instantiates a new specialized worker.
@@ -38,8 +37,7 @@ public class ExpertWorker extends RegionWorker {
 		if (!expertiseSet.contains(value))
 			expertiseSet.add(value);
 	}
-	
-	
+
 	/**
 	 * Instantiates a new specialized worker.
 	 * 
@@ -54,7 +52,8 @@ public class ExpertWorker extends RegionWorker {
 	 * @param mbr
 	 *            the mbr
 	 */
-	public ExpertWorker(String id, double lt, double ln, int maxT, WorkingRegion mbr) {
+	public ExpertWorker(String id, double lt, double ln, int maxT,
+			WorkingRegion mbr) {
 		super(id, lt, ln, maxT, mbr);
 	}
 
@@ -63,6 +62,9 @@ public class ExpertWorker extends RegionWorker {
 		super();
 	}
 
+	public ExpertWorker(double lat, double lng) {
+		super(lat, lng);
+	}
 
 	/**
 	 * Adds the expertise.
@@ -73,31 +75,16 @@ public class ExpertWorker extends RegionWorker {
 	public void addExpertise(int exp) {
 		expertiseSet.add(exp);
 	}
-	
-	
 
 	public HashSet<Integer> getExpertiseSet() {
 		return expertiseSet;
 	}
 
-
 	/**
-	 * To str.
 	 * 
-	 * @return the string
+	 * @return a list of expertise
 	 */
-	public String toStr() {
-		String str = getId() + "," + getLat() + "," + getLng() + ","
-				+ getCapacity() + ",[" + getMbr().getMinLat() + "," + getMbr().getMinLng()
-				+ "," + getMbr().getMaxLat() + "," + getMbr().getMaxLng() + "],[" + toString() + "]";
-		return str;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
+	public String toStringExpertise() {
 		StringBuffer sb = new StringBuffer();
 		Iterator<Integer> it = expertiseSet.iterator();
 		while (it.hasNext()) {
@@ -105,5 +92,18 @@ public class ExpertWorker extends RegionWorker {
 			sb.append(',');
 		}
 		return sb.substring(0, sb.length() - 1);
+	}
+
+	/**
+	 * To str.
+	 * 
+	 * @return the string
+	 */
+	@Override
+	public String toString() {
+		if (expertiseSet != null)
+			return super.toString() + ",[" + toStringExpertise() + "]";
+		else
+			return super.toString();
 	}
 }

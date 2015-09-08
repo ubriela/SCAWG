@@ -5,11 +5,18 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.geocrowd.DatasetEnum;
-import org.geocrowd.GeocrowdConstants;
+import org.geocrowd.Distribution1DEnum;
+import org.geocrowd.TaskCategoryEnum;
+import org.geocrowd.TaskType;
+import org.geocrowd.WorkerCapacityEnum;
+import org.geocrowd.WorkerType;
+import org.geocrowd.WorkingRegionEnum;
 import org.geocrowd.common.crowd.ExpertWorker;
+import org.geocrowd.common.crowd.GenericWorker;
 import org.geocrowd.common.entropy.Coord;
 import org.geocrowd.common.entropy.EntropyUtility;
 import org.geocrowd.common.entropy.Observation;
+import org.geocrowd.datasets.params.GeocrowdConstants;
 import org.geocrowd.datasets.params.GowallaConstants;
 import org.geocrowd.datasets.synthesis.gowalla.GowallaProcessor;
 import org.junit.Test;
@@ -20,11 +27,9 @@ public class GowallaParserTest {
 	 */
 	@Test
 	public void computeLocationEntropy() {
-		GowallaProcessor prep = new GowallaProcessor();
-		GowallaProcessor.DATA_SET = DatasetEnum.GOWALLA;
-		
-		prep.readBoundary();
-		prep.createGrid();
+		GowallaProcessor prep = new GowallaProcessor(20,
+				WorkerType.EXPERT, TaskType.EXPERT,
+				TaskCategoryEnum.RANDOM);
 		
 		// compute occurrences of each location id from Gowalla
 		// each location id is associated with a grid 
@@ -46,14 +51,12 @@ public class GowallaParserTest {
 	 */
 	@Test
 	public void generateWorkers_irain() {
-		GowallaProcessor prep = new GowallaProcessor();
-		GowallaProcessor.DATA_SET = DatasetEnum.GOWALLA;
-		
-		prep.readBoundary();
-		prep.createGrid();
+		GowallaProcessor prep = new GowallaProcessor(20,
+				WorkerType.EXPERT, TaskType.EXPERT,
+				TaskCategoryEnum.RANDOM);
 
 		// generating workers from Gowalla
-		Hashtable<Date, ArrayList<ExpertWorker>> hashTable = prep
+		Hashtable<Date, ArrayList<GenericWorker>> hashTable = prep
 				.generateRealWorkers(GowallaConstants.gowallaFileName_CA);
 		prep.saveRealWorkersMax(hashTable);
 		
@@ -68,8 +71,9 @@ public class GowallaParserTest {
 	 */
 	@Test
 	public void testGenerateWorkers_privgeocrowd() {
-		GowallaProcessor prep = new GowallaProcessor();
-		GowallaProcessor.DATA_SET = DatasetEnum.GOWALLA;
+		GowallaProcessor prep = new GowallaProcessor(20,
+				WorkerType.EXPERT, TaskType.EXPERT,
+				TaskCategoryEnum.RANDOM);
 		
 		// CA: 32.1713906, -124.3041035, 41.998434033, -114.0043464333
 		// Los Angeles: 33.699476,-118.570633, 34.319887,-118.192978
@@ -88,8 +92,9 @@ public class GowallaParserTest {
 	 */
 	@Test
 	public void testFilterInput() {
-		GowallaProcessor prep = new GowallaProcessor();
-		GowallaProcessor.DATA_SET = DatasetEnum.GOWALLA;
+		GowallaProcessor prep = new GowallaProcessor(20,
+				WorkerType.EXPERT, TaskType.EXPERT,
+				TaskCategoryEnum.RANDOM);
 		
 //		prep.filterInput(GeocrowdConstants.gowallaFileName_CA, 32.1713906, -124.3041035, 41.998434033, -114.0043464333);
 		

@@ -1,6 +1,9 @@
 package org.geocrowd.common.crowd;
 
 import org.geocrowd.WorkerType;
+import org.geocrowd.datasets.synthetic.GenericProcessor;
+import org.geocrowd.datasets.synthetic.WorkerIDGenerator;
+import org.geocrowd.datasets.synthetic.WorkingRegionGenerator;
 
 /**
  * This class uses Factory pattern. This type of design pattern comes under
@@ -14,21 +17,22 @@ import org.geocrowd.WorkerType;
  *
  */
 public class WorkerFactory {
-	public static GenericWorker getWorker(WorkerType workerType) {
+	
+	public static GenericWorker getWorker(WorkerType workerType, double lat, double lng) {
 		if (workerType == null) {
 			return null;
 		}
 
 		if (workerType == WorkerType.GENERIC) {
-			return new GenericWorker();
+			return new GenericWorker(lat, lng);
 		} else if (workerType == WorkerType.EXPERT) {
-			return new ExpertWorker();
+			return new ExpertWorker(lat, lng);
 		} else if (workerType == WorkerType.REGION) {
-			return new RegionWorker();
+			return new RegionWorker(lat, lng);
 		} else if (workerType == WorkerType.TRUST) {
-			return new TrustWorker();
+			return new TrustWorker(lat, lng);
 		} else if (workerType == WorkerType.SENSING) {
-			return new SensingWorker();
+			return new SensingWorker(lat, lng);
 		}
 
 		return null;

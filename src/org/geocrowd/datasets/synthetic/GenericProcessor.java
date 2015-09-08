@@ -7,26 +7,41 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import org.fife.ui.rsyntaxtextarea.parser.TaskTagParser;
 import org.geocrowd.DatasetEnum;
 import org.geocrowd.Distribution1DEnum;
-import org.geocrowd.GeocrowdConstants;
+import org.geocrowd.TaskCategoryEnum;
+import org.geocrowd.TaskDurationEnum;
+import org.geocrowd.TaskRadiusEnum;
+import org.geocrowd.TaskRewardEnum;
 import org.geocrowd.TaskType;
+import org.geocrowd.WorkerCapacityEnum;
+import org.geocrowd.WorkerIDEnum;
 import org.geocrowd.WorkerType;
+import org.geocrowd.WorkingRegionEnum;
 import org.geocrowd.common.crowd.ExpertTask;
 import org.geocrowd.common.crowd.ExpertWorker;
+import org.geocrowd.common.crowd.GenericTask;
+import org.geocrowd.common.crowd.GenericWorker;
+import org.geocrowd.common.crowd.RegionWorker;
+import org.geocrowd.common.crowd.RewardTask;
+import org.geocrowd.common.crowd.SensingTask;
 import org.geocrowd.common.crowd.TaskFactory;
 import org.geocrowd.common.crowd.WorkerFactory;
 import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.common.entropy.EntropyUtility;
 import org.geocrowd.common.utils.TaskUtility;
 import org.geocrowd.common.utils.Utils;
+import org.geocrowd.datasets.params.GeocrowdConstants;
+import org.geocrowd.datasets.params.GeocrowdSensingConstants;
 import org.geocrowd.dtype.Range;
 
 public class GenericProcessor {
 
 	public static Character delimiter = '\t';
 
-	public Distribution1DEnum workerIdDist = Distribution1DEnum.UNIFORM_1D;
+	public int uniqueWorkerCount = 0;
+	public WorkerIDEnum workerIdDist = WorkerIDEnum.UNIFORM;
 
 	/** The min lat. */
 	public static double minLat = Double.MAX_VALUE;
@@ -53,23 +68,71 @@ public class GenericProcessor {
 	public int resolution = 0;
 
 	/** The data set. */
-	public static DatasetEnum DATA_SET;
+	public DatasetEnum DATA_SET;
 
-	/**
-	 * Check boundary mbr.
-	 * 
-	 * @param mbr
-	 *            the mbr
-	 */
-	private void checkBoundaryMBR(WorkingRegion mbr) {
-		if (mbr.getMinLat() < minLat)
-			mbr.setMinLat(minLat);
-		if (mbr.getMaxLat() > maxLat)
-			mbr.setMaxLat(maxLat);
-		if (mbr.getMinLng() < minLng)
-			mbr.setMinLng(minLng);
-		if (mbr.getMaxLng() > maxLng)
-			mbr.setMaxLng(maxLng);
+	protected WorkingRegionEnum workingRegionType = WorkingRegionEnum.CONSTANT;
+	protected WorkerCapacityEnum workerCapacityType = WorkerCapacityEnum.CONSTANT;
+	protected TaskCategoryEnum taskCategoryType = TaskCategoryEnum.RANDOM;
+	protected WorkerType workerType = WorkerType.EXPERT;
+	protected TaskType taskType = TaskType.EXPERT;
+	protected TaskRadiusEnum taskRadiusDistribution = TaskRadiusEnum.CONSTANT;
+	protected TaskRewardEnum taskRewardDistribution = TaskRewardEnum.RANDOM;
+
+	protected TaskDurationEnum taskDurationDistribution = TaskDurationEnum.CONSTANT;
+
+
+	public GenericProcessor() {
+		super();
+	}
+
+	public GenericProcessor(int instances, int uniqueWorkerCount, DatasetEnum dataset,
+			WorkerIDEnum workerIdDist, WorkerType workerType,
+			WorkingRegionEnum mbrType, WorkerCapacityEnum capacityType,
+			TaskType taskType, TaskCategoryEnum taskCategoryType,
+			TaskRadiusEnum taskRadiusDistribution,
+			TaskRewardEnum taskRewardDistribution,
+			TaskDurationEnum taskDurationDistribution) {
+		super();
+		GeocrowdConstants.TIME_INSTANCE = instances;
+		this.uniqueWorkerCount = uniqueWorkerCount;
+		this.DATA_SET = dataset;
+		this.workerIdDist = workerIdDist;
+		this.workingRegionType = mbrType;
+		this.workerCapacityType = capacityType;
+		this.workerType = workerType;
+		this.taskType = taskType;
+		this.taskCategoryType = taskCategoryType;
+		this.taskRadiusDistribution = taskRadiusDistribution;
+		this.taskRewardDistribution = taskRewardDistribution;
+		this.taskDurationDistribution = taskDurationDistribution;
+
+		generateData();
+	}
+	
+	public GenericProcessor(int instances, DatasetEnum dataset, WorkerType workerType, TaskType taskType, TaskCategoryEnum taskCategory) {
+		super();
+		GeocrowdConstants.TIME_INSTANCE = instances;
+		this.DATA_SET = dataset;
+		this.workerType = workerType;
+		this.taskType = taskType;
+		this.taskCategoryType = taskCategory;
+		
+		computeBoundary();
+		readBoundary();
+		createGrid();
+	}
+	
+
+	private void generateData() {
+		computeBoundary();
+		readBoundary();
+		createGrid();
+
+		// generating workers
+		generateSynWorkers();
+
+		// generate tasks
+		generateSynTasks();
 	}
 
 	/**
@@ -127,7 +190,8 @@ public class GenericProcessor {
 		double x = Utils.distance(minLat, minLng, maxLat, minLng);
 		double y = Utils.distance(minLat, minLng, minLat, maxLng);
 		System.out.println("Area: " + x * y);
-		System.out.println("Region MBR size: " + TaskUtility.diagonalLength(mbr));
+		System.out.println("Region MBR size: "
+				+ TaskUtility.diagonalLength(mbr));
 	}
 
 	/**
@@ -139,66 +203,50 @@ public class GenericProcessor {
 	 *            : the workers are formed into four Gaussian clusters
 	 * @param isConstantMBR
 	 *            the is constant mbr
-	 * @param isConstantMaxT
+	 * @param isConstantCapacity
 	 *            the is constant max t
 	 * @maxT is randomly generated
 	 */
 	private void generateSyncWorkersFromDataPoints(String outputFile,
-			String inputFile, boolean isConstantMBR, boolean isConstantMaxT) {
-		double maxRangeX = (maxLat - minLat) * (GeocrowdConstants.MaxRangePerc);
-		double maxRangeY = (maxLng - minLng) * GeocrowdConstants.MaxRangePerc;
-		// generate worker id
+			String inputFile, WorkingRegionEnum mbrType,
+			WorkerCapacityEnum capacityType) {
 
+		TaskCategoryGenerator tcGen = new TaskCategoryGenerator(
+				GeocrowdConstants.TASK_CATEGORY_NUMBER);
 		try {
 			FileWriter writer = new FileWriter(outputFile);
 			BufferedWriter out = new BufferedWriter(writer);
 			StringBuffer sb = new StringBuffer();
 			FileReader reader = new FileReader(inputFile);
 			BufferedReader in = new BufferedReader(reader);
+			WorkerCapacityGenerator wcGen = new WorkerCapacityGenerator(
+					GeocrowdConstants.MAX_WORKER_CAPACITY);
 			while (in.ready()) {
 				String line = in.readLine();
 				String[] parts = line.split(delimiter.toString());
-				int maxT = 0;
-				if (isConstantMaxT)
-					maxT = GeocrowdConstants.MaxTasksPerWorker;
-				else
-					maxT = (int) UniformGenerator.randomValue(new Range(0,
-							GeocrowdConstants.MaxTasksPerWorker), true) + 1;
-				double rangeX = 0;
-				double rangeY = 0;
-				if (isConstantMBR) {
-					rangeX = maxRangeX;
-					rangeY = maxRangeY;
-				} else {
-					rangeX = UniformGenerator.randomValue(new Range(0,
-							maxRangeX), false);
-					rangeY = UniformGenerator.randomValue(new Range(0,
-							maxRangeY), false);
-				}
 
-				int exp = (int) UniformGenerator.randomValue(new Range(0,
-						GeocrowdConstants.TaskCategoryNo), true);
-				ExpertWorker w = (ExpertWorker) WorkerFactory
-						.getWorker(WorkerType.EXPERT);
-				w.setLat(Double.parseDouble(parts[0]));
-				w.setLng(Double.parseDouble(parts[1]));
-				w.setCapacity(maxT);
-				WorkingRegion mbr = WorkingRegion.createMBR(w.getLat(),
-						w.getLng(), rangeX, rangeY);
-				checkBoundaryMBR(mbr);
-				w.setMbr(mbr);
-				w.addExpertise(exp);
-
+				GenericWorker w = WorkerFactory.getWorker(workerType,
+						Double.parseDouble(parts[0]),
+						Double.parseDouble(parts[1]));
+				w.setCapacity(wcGen.nextWorkerCapacity(capacityType));
 				WorkerIDGenerator widGenerator = new WorkerIDGenerator(
-						workerIdDist, 1000);
+						workerIdDist, uniqueWorkerCount);
 				int workerId = widGenerator.nextWorkerId();
-				w.setActiveness(widGenerator.workerActiveness.get(workerId));
+				w.setActiveness(widGenerator.getWorkerIdToActiveness().get(workerId));
 
-				sb.append(workerId + "," + w.getLat() + "," + w.getLng() + ","
-						+ w.getCapacity() + "," + w.getActiveness() + ",["
-						+ mbr.getMinLat() + "," + mbr.getMinLng() + ","
-						+ mbr.getMaxLat() + "," + mbr.getMaxLng() + "],[" + exp
-						+ "]\n");
+				if (workerType == WorkerType.REGION
+						|| workerType == WorkerType.EXPERT
+						|| workerType == WorkerType.SENSING) {
+					RegionWorker rw = (RegionWorker) w;
+					WorkingRegionGenerator wrGen = new WorkingRegionGenerator(
+							minLat, minLng, maxLat, maxLng);
+					rw.setMbr(wrGen.nextWorkingRegion(w, workingRegionType));
+				}
+				if (workerType == WorkerType.EXPERT) {
+					ExpertWorker ew = (ExpertWorker) w;
+					ew.addExpertise(tcGen.nextTaskCategory(taskCategoryType));
+				}
+				sb.append(w + "\n");
 			}
 			out.write(sb.toString());
 			out.close();
@@ -226,19 +274,34 @@ public class GenericProcessor {
 			while (in.ready()) {
 				String line = in.readLine();
 				String[] parts = line.split(delimiter.toString());
-				int taskCategory = (int) UniformGenerator.randomValue(
-						new Range(0, GeocrowdConstants.TaskCategoryNo), true);
-				ExpertTask t = (ExpertTask) TaskFactory
-						.getTask(TaskType.EXPERT);
-				t.setLat(Double.parseDouble(parts[0]));
-				t.setLng(Double.parseDouble(parts[1]));
-				t.setArrivalTime(timeCounter);
-				t.setEntropy(-1);
-				t.setCategory(taskCategory);
+				GenericTask t = TaskFactory.getTask(taskType,
+						Double.parseDouble(parts[0]),
+						Double.parseDouble(parts[1]));
 
-				out.write(t.getLat() + "," + t.getLng() + ","
-						+ t.getArrivalTime() + "," + t.getEntropy() + ","
-						+ t.getCategory() + "\n");
+				TaskDurationGenerator tdGen = new TaskDurationGenerator(GeocrowdConstants.MAX_TASK_DURATION);
+	
+				t.setArrivalTime(timeCounter);
+				t.setExpiryTime(t.getArrivalTime() + tdGen.nextTaskDuration(taskDurationDistribution));
+
+				if (taskType == TaskType.EXPERT) {
+					ExpertTask et = (ExpertTask) t;
+					TaskCategoryGenerator tcGen = new TaskCategoryGenerator(
+							GeocrowdConstants.TASK_CATEGORY_NUMBER);
+					et.setCategory(tcGen.nextTaskCategory(taskCategoryType));
+				} else if (taskType == TaskType.SENSING) {
+					TaskRadiusGenerator trGen = new TaskRadiusGenerator(
+							GeocrowdSensingConstants.TASK_RADIUS);
+					SensingTask st = (SensingTask) t;
+					st.setRadius(trGen.nextTaskRadius(taskRadiusDistribution));
+				}
+				if (taskType == TaskType.REWARD) {
+					TaskRewardGenerator trGen = new TaskRewardGenerator(
+							GeocrowdConstants.MAX_TASK_REWARD);
+					RewardTask rt = (RewardTask) t;
+					rt.setReward(trGen.nextTaskReward(taskRewardDistribution));
+				}
+
+				out.write(t.toString() + "\n");
 				taskCount++;
 			}
 			out.close();
@@ -253,10 +316,9 @@ public class GenericProcessor {
 	public void generateSynTasks() {
 		timeCounter = 0;
 		String outputFileFrefix = Utils.datasetToTaskPath(DATA_SET);
-		System.out.println("Tasks:");
 		for (int i = 0; i < GeocrowdConstants.TIME_INSTANCE; i++) {
 			generateSyncTasksFromDataPoints(outputFileFrefix + i + ".txt",
-					GeocrowdConstants.inputTaskFilePath + i + ".txt");
+					GeocrowdConstants.TASK_FILE_PATH + i + ".txt");
 			timeCounter++;
 		}
 	}
@@ -264,19 +326,15 @@ public class GenericProcessor {
 	/**
 	 * Generate syn workers.
 	 * 
-	 * @param isConstantMBR
-	 *            the is constant mbr
-	 * @param isConstantMaxT
-	 *            the is constant max t
 	 */
-	public void generateSynWorkers(boolean isConstantMBR, boolean isConstantMaxT) {
+	public void generateSynWorkers() {
 		String outputFileFrefix = Utils.datasetToWorkerPath(DATA_SET);
-		System.out.println("Workers:");
 		for (int i = 0; i < GeocrowdConstants.TIME_INSTANCE; i++) {
 			generateSyncWorkersFromDataPoints(outputFileFrefix + i + ".txt",
-					GeocrowdConstants.inputWorkerFilePath + i + ".txt",
-					isConstantMBR, isConstantMaxT);
+					GeocrowdConstants.WORKER_FILE_PATH + i + ".txt",
+					workingRegionType, workerCapacityType);
 		}
+
 	}
 
 	public void debug() {
@@ -516,7 +574,7 @@ public class GenericProcessor {
 
 						// System.out.println(lat +" "+ lng +" "+ lat2 +" "+
 						// lng2);
-						if (Utils.distance(lat, lng, lat2, lng2) < GeocrowdConstants.radius) {
+						if (Utils.distance(lat, lng, lat2, lng2) < GeocrowdSensingConstants.TASK_RADIUS) {
 							// System.out.println(Utils.distance(lat, lng, lat2,
 							// lng2));
 							for (Integer userid : obs.keySet()) {

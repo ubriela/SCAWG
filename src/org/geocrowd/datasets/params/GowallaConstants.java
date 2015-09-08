@@ -2,6 +2,8 @@ package org.geocrowd.datasets.params;
 
 public class GowallaConstants {
 
+	public static int MIN_TIME = 290;
+	
 	// real dataset gowalla
 	/** The gowalla resolution. */
 	public static int gowallaResolution = 50000; // 0.00002 is approximately

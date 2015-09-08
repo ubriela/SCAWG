@@ -22,9 +22,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import org.geocrowd.GeocrowdConstants;
+import org.geocrowd.DatasetEnum;
+import org.geocrowd.Distribution1DEnum;
+import org.geocrowd.TaskCategoryEnum;
+import org.geocrowd.TaskDurationEnum;
+import org.geocrowd.TaskRadiusEnum;
+import org.geocrowd.TaskRewardEnum;
+import org.geocrowd.TaskType;
+import org.geocrowd.WorkerCapacityEnum;
+import org.geocrowd.WorkerIDEnum;
 import org.geocrowd.WorkerType;
+import org.geocrowd.WorkingRegionEnum;
 import org.geocrowd.common.crowd.ExpertWorker;
+import org.geocrowd.common.crowd.GenericWorker;
+import org.geocrowd.common.crowd.RegionWorker;
 import org.geocrowd.common.crowd.WorkerFactory;
 import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.common.entropy.Coord;
@@ -32,9 +43,13 @@ import org.geocrowd.common.entropy.EntropyUtility;
 import org.geocrowd.common.entropy.Observation;
 import org.geocrowd.common.utils.TaskUtility;
 import org.geocrowd.common.utils.Utils;
+import org.geocrowd.datasets.params.GeocrowdConstants;
 import org.geocrowd.datasets.params.GowallaConstants;
 import org.geocrowd.datasets.synthetic.GenericProcessor;
+import org.geocrowd.datasets.synthetic.TaskCategoryGenerator;
 import org.geocrowd.datasets.synthetic.UniformGenerator;
+import org.geocrowd.datasets.synthetic.WorkerIDGenerator;
+import org.geocrowd.datasets.synthetic.WorkingRegionGenerator;
 import org.geocrowd.dtype.Point;
 import org.geocrowd.dtype.PointTime;
 import org.geocrowd.dtype.Range;
@@ -49,7 +64,8 @@ public class GowallaProcessor extends GenericProcessor {
 	/**
 	 * Instantiates a new pre process.
 	 */
-	public GowallaProcessor() {
+	public GowallaProcessor(int instances, WorkerType workerType, TaskType taskType, TaskCategoryEnum taskCategory) {
+		super(instances, DatasetEnum.GOWALLA, workerType, taskType, taskCategory);
 	}
 
 	/**
@@ -88,7 +104,6 @@ public class GowallaProcessor extends GenericProcessor {
 		// dump boundary to file
 		dumpBoundary();
 	}
-
 
 	/**
 	 * Compute sync location density.
@@ -413,7 +428,8 @@ public class GowallaProcessor extends GenericProcessor {
 
 					updateCount++;
 					ArrayList<Point> pts_t = new ArrayList<Point>(new_locs);
-					WorkingRegion mbr = new WorkingRegion(Utils.computeMBR(pts_t));
+					WorkingRegion mbr = new WorkingRegion(
+							Utils.computeMBR(pts_t));
 
 					PointTime p = new PointTime(key, 0,
 							(mbr.getMaxLat() + mbr.getMinLat()) / 2.0,
@@ -475,8 +491,7 @@ public class GowallaProcessor extends GenericProcessor {
 			double max_x, double max_y) {
 		System.out.println("Filtering location data...");
 		try {
-			FileReader reader = new FileReader(
-					GowallaConstants.gowallaFileName);
+			FileReader reader = new FileReader(GowallaConstants.gowallaFileName);
 			BufferedReader in = new BufferedReader(reader);
 			FileWriter writer = new FileWriter(filename);
 			BufferedWriter out = new BufferedWriter(writer);
@@ -520,69 +535,78 @@ public class GowallaProcessor extends GenericProcessor {
 	 *            the datasetfile
 	 * @return the hashtable
 	 */
-	public Hashtable<Date, ArrayList<ExpertWorker>> generateRealWorkers(
+	public Hashtable<Date, ArrayList<GenericWorker>> generateRealWorkers(
 			String datasetfile) {
-		Hashtable<Date, ArrayList<ExpertWorker>> hashTable = new Hashtable();
+		Hashtable<Date, ArrayList<GenericWorker>> hashTable = new Hashtable();
 		try {
 			FileReader reader = new FileReader(
 					GowallaConstants.gowallaFileName_CA);
 			BufferedReader in = new BufferedReader(reader);
 			int cnt = 0;
+			TaskCategoryGenerator tcGen = new TaskCategoryGenerator(
+					GeocrowdConstants.TASK_CATEGORY_NUMBER);
 			while (in.ready()) {
 				String line = in.readLine();
 				String[] parts = line.split(delimiter.toString());
 				String[] DateTimeStr = parts[1].split("T");
 				Date date = Date.valueOf(DateTimeStr[0]);
-				Double lat = Double.parseDouble(parts[2]);
-				Double lng = Double.parseDouble(parts[3]);
-
-				// init MBR of each worker
-				WorkingRegion mbr = new WorkingRegion(lat - 2 / resolution, lng - 2 / resolution,
-						lat + 2 / resolution, lng + 2 / resolution);
-
-				// make sure the MBR is within the boundary
-				if (mbr.getMinLat() < minLat)
-					mbr.setMinLat(minLat);
-				if (mbr.getMaxLat() > maxLat)
-					mbr.setMaxLat(maxLat);
-				if (mbr.getMinLng() < minLng)
-					mbr.setMinLng(minLng);
-				if (mbr.getMaxLng() > maxLng)
-					mbr.setMaxLng(maxLng);
-//				Integer pointID = Integer.parseInt(parts[4]);
-				int exp = (int) UniformGenerator.randomValue(new Range(0,
-						GeocrowdConstants.TaskCategoryNo), true);
-				ExpertWorker w = (ExpertWorker) WorkerFactory.getWorker(WorkerType.EXPERT);
+				
+				GenericWorker w = WorkerFactory.getWorker(workerType,
+						Double.parseDouble(parts[2]),
+						Double.parseDouble(parts[3]));
 				w.setId(parts[0]);
-				w.setLat(lat);
-				w.setLng(lng);
-				w.setCapacity(0);
-				w.setMbr(mbr);
-				w.addExpertise(exp);
+				w.setCapacity(0);	// not used yet
+				w.setActiveness(0);	// not used yet
+				
+				if (workerType == WorkerType.REGION
+						|| workerType == WorkerType.EXPERT
+						|| workerType == WorkerType.SENSING) {
+					RegionWorker rw = (RegionWorker) w;
+					WorkingRegion mbr = new WorkingRegion(w.getLat() - 2 / resolution, w.getLng()
+							- 2 / resolution, w.getLat() + 2 / resolution, w.getLng() + 2
+							/ resolution);
+					// make sure the MBR is within the boundary
+					if (mbr.getMinLat() < minLat)
+						mbr.setMinLat(minLat);
+					if (mbr.getMaxLat() > maxLat)
+						mbr.setMaxLat(maxLat);
+					if (mbr.getMinLng() < minLng)
+						mbr.setMinLng(minLng);
+					if (mbr.getMaxLng() > maxLng)
+						mbr.setMaxLng(maxLng);
+					rw.setMbr(mbr);
+				}
+				if (workerType == WorkerType.EXPERT) {
+					ExpertWorker ew = (ExpertWorker) w;
+					ew.addExpertise(tcGen.nextTaskCategory(taskCategoryType));
+				}
+			
 				if (!hashTable.containsKey(date)) {
-					ArrayList<ExpertWorker> workers = new ArrayList<ExpertWorker>();
+					ArrayList<GenericWorker> workers = new ArrayList<GenericWorker>();
 					workers.add(w);
 					hashTable.put(date, workers);
 				} else {
-					ArrayList<ExpertWorker> workers = hashTable.get(date);
+					ArrayList<GenericWorker> workers = hashTable.get(date);
 					boolean found = false; // check if the worker is already in
 											// the worker list, if yes -->
 											// update his maxTass and R
-					for (ExpertWorker o : workers) {
-						if (o.getId().equals(w.getId())) {
+					for (GenericWorker o : workers) {
+						RegionWorker rw = (RegionWorker) w;
+						if (rw.getId().equals(w.getId())) {
+							
 							o.incCapacity(); // set maxTask as the number of
 												// check-ins
 
 							// set working region R of each worker as MBR of his
 							// check-ins locations
-							if (lat < o.getMbr().getMinLat())
-								o.setMinLat(lat);
-							if (lat > o.getMbr().getMaxLat())
-								o.setMaxLat(lat);
-							if (lng < o.getMbr().getMinLng())
-								o.setMinLng(lng);
-							if (lng > o.getMbr().getMaxLng())
-								o.setMaxLng(lng);
+							if (w.getLat() < rw.getMbr().getMinLat())
+								rw.setMinLat(w.getLat());
+							if (w.getLat() > rw.getMbr().getMaxLat())
+								rw.setMaxLat(w.getLat());
+							if (w.getLng() < rw.getMbr().getMinLng())
+								rw.setMinLng(w.getLng());
+							if (w.getLng() > rw.getMbr().getMaxLng())
+								rw.setMaxLng(w.getLng());
 
 							found = true;
 							break;
@@ -762,7 +786,7 @@ public class GowallaProcessor extends GenericProcessor {
 
 				ArrayList<ExpertWorker> workers = hashTable.get(date);
 				for (ExpertWorker o : workers) {
-					out.write(o.toStr() + "\n");
+					out.write(o + "\n");
 					workerCount++;
 				}
 			}
@@ -793,7 +817,7 @@ public class GowallaProcessor extends GenericProcessor {
 			int i = 0;
 			for (Date date : dates) {
 				i++;
-				if (i < GeocrowdConstants.MIN_TIME)
+				if (i < GowallaConstants.MIN_TIME)
 					continue;
 
 				if (workerCnt == 0) {
@@ -801,7 +825,7 @@ public class GowallaProcessor extends GenericProcessor {
 							GowallaConstants.gowallaWorkerFileNamePrefix
 									+ instanceCnt.toString() + ".txt");
 					out = new BufferedWriter(writer);
-				} else if (workerCnt > GeocrowdConstants.WorkerNo) {
+				} else if (workerCnt > GeocrowdConstants.WORKER_NUMBER) {
 					instanceCnt++;
 					System.out.println("worker count " + i + " : " + workerCnt);
 					workerCnt = 0;
@@ -813,7 +837,7 @@ public class GowallaProcessor extends GenericProcessor {
 
 				ArrayList<ExpertWorker> workers = hashTable.get(date);
 				for (ExpertWorker o : workers) {
-					out.write(o.toStr() + "\n");
+					out.write(o + "\n");
 					workerCnt++;
 				}
 			}
@@ -832,7 +856,7 @@ public class GowallaProcessor extends GenericProcessor {
 	 *            the hash table
 	 */
 	public void saveRealWorkersMax(
-			Hashtable<Date, ArrayList<ExpertWorker>> hashTable) {
+			Hashtable<Date, ArrayList<GenericWorker>> hashTable) {
 		try {
 			// sort key and iterate based on key
 			List<Date> dates = new ArrayList<Date>(hashTable.keySet());
@@ -844,7 +868,7 @@ public class GowallaProcessor extends GenericProcessor {
 			int i = 0;
 			for (Date date : dates) {
 				i++;
-				if (i < GeocrowdConstants.MIN_TIME)
+				if (i < GowallaConstants.MIN_TIME)
 					continue;
 
 				FileWriter writer = new FileWriter(
@@ -853,9 +877,9 @@ public class GowallaProcessor extends GenericProcessor {
 				out = new BufferedWriter(writer);
 				Integer workerCnt = 0;
 
-				ArrayList<ExpertWorker> workers = hashTable.get(date);
-				for (ExpertWorker o : workers) {
-					out.write(o.toStr() + "\n");
+				ArrayList<GenericWorker> workers = hashTable.get(date);
+				for (GenericWorker o : workers) {
+					out.write(o + "\n");
 					workerCnt++;
 				}
 
