@@ -34,7 +34,7 @@ import org.geocrowd.dtype.WeightedPoint;
  * @author HT186010
  * 
  */
-public class SpatialDistGenerator {
+public class Distribution2DGenerator {
 	public static int time = 0;
 	public static int gaussianCluster = 4;
 	public static ArrayList<Long> seeds;
@@ -43,10 +43,10 @@ public class SpatialDistGenerator {
 	private String filePath = "";
 	private Character delimiter = '\t';
 
-	public SpatialDistGenerator() {
+	public Distribution2DGenerator() {
 	}
 	
-	public SpatialDistGenerator(String filePath) {
+	public Distribution2DGenerator(String filePath) {
 		this.filePath = filePath;
 	}
 
@@ -57,7 +57,7 @@ public class SpatialDistGenerator {
 	 * @param boundary
 	 * @return
 	 */
-	public Vector<Point> generateUniformPoints(int n, Rectangle boundary) {
+	private Vector<Point> generateUniformPoints(int n, Rectangle boundary) {
 		Vector<Point> points = new Vector<Point>();
 
 		for (int i = 0; i < n; i++) {
@@ -237,71 +237,6 @@ public class SpatialDistGenerator {
 		return points;
 	}
 
-	/**
-	 * A twisted version of Gaussian distribution, in which when the value is
-	 * out of a range, we regenerate the value
-	 * 
-	 * @param count
-	 * @param min
-	 * @param max
-	 * @param isInteger
-	 * @param b
-	 * @return
-	 */
-	private Vector<Double> generate1DGaussianValues(int count, double min,
-			double max, boolean isInteger, boolean b) {
-		Vector<Double> values = new Vector<Double>();
-
-		int n = 0;
-		while (true) {
-			NormalDistribution nd = new NormalDistribution((max - min) / 2,
-					(max - min) / 4);
-			double val = nd.sample();
-			if (val > max || val < min)
-				continue;
-			if (isInteger) {
-				double tmp = (int) val;
-				values.add(tmp);
-			} else
-				values.add(val);
-
-			if (n++ == count)
-				break;
-		}
-
-		return values;
-	}
-
-	/**
-	 * Generate zipf distribution
-	 * 
-	 * @param n
-	 * @param min
-	 * @param max
-	 * @param b
-	 * @return
-	 */
-	public static Vector<Double> generate1DZipfValues(int n, double min, double max,
-			boolean isInteger, boolean isSorted) {
-		Vector<Double> values = new Vector<Double>();
-
-		int count = 0;
-		while (true) {
-			if (count++ == n)
-				break;
-
-			int rand = (int) UniformGenerator.randomValue(new Range(0, max
-					- min), true);
-			double val = ((max - min) * Utils.zipf_pmf(n, rand, 1));
-			if (isInteger) {
-				double tmp = (int) val;
-				values.add(tmp);
-			} else
-				values.add(val);
-		}
-
-		return values;
-	}
 
 	/**
 	 * Generate zipf distribution
@@ -636,7 +571,7 @@ public class SpatialDistGenerator {
 	 * @param n
 	 * @param outFilePath
 	 */
-	public void generateSamplingDataset(int n, String outFilePath) {
+	public void generateSampledDataset(int n, String outFilePath) {
 		PointFileReader pointFileReader = new PointFileReader(filePath);
 		writePointsToFile(simpleRandomSampling(n, pointFileReader.parse()),
 				outFilePath);
@@ -674,35 +609,7 @@ public class SpatialDistGenerator {
 		return points;
 	}
 
-	/**
-	 * Output is a list of values that follow a distribution
-	 * 
-	 * @param n
-	 * @param min
-	 * @param max
-	 * @param dist
-	 * @param isInteger
-	 */
-	public Vector<Double> generate1DDataset(int count, double min, double max,
-			Distribution1DEnum dist, boolean isInteger) {
-		Vector<Double> values = null;
-		switch (dist) {
-		case UNIFORM_1D: // uniform one-dimensional dataset
-			values = UniformGenerator
-					.randomSequence(count, min, max, isInteger);
-			break;
-		case ZIFFIAN_1D: // zipf distribution
-			values = generate1DZipfValues(count, min, max, isInteger, false);
-			break;
-		case GAUSSIAN_1D:
-			values = generate1DGaussianValues(count, min, max, isInteger, false);
-			break;
-		}
-//		writeIntegersToFile(values, filePath);
-		// writeIntegersToFileWithKey(values, filePath + ".data");
-		
-		return values;
-	}
+
 
 	/**
 	 * Generate two-dimensional datasets

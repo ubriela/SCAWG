@@ -31,12 +31,12 @@ import java.util.Random;
 import java.util.Set;
 
 import org.geocrowd.DatasetEnum;
-import org.geocrowd.GeocrowdConstants;
 import org.geocrowd.common.crowd.ExpertTask;
 import org.geocrowd.common.crowd.ExpertWorker;
 import org.geocrowd.common.crowd.GenericTask;
 import org.geocrowd.common.crowd.GenericWorker;
 import org.geocrowd.common.crowd.WorkingRegion;
+import org.geocrowd.datasets.params.GeocrowdConstants;
 //import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.datasets.params.GowallaConstants;
 import org.geocrowd.datasets.params.YelpConstants;
@@ -686,13 +686,13 @@ public class Utils {
 		case GOWALLA:
 			return GowallaConstants.gowallaResolution;
 		case SKEWED:
-			return GeocrowdConstants.skewedResolution;
+			return GeocrowdConstants.SKEWED_GRID_RESOLUTION;
 		case UNIFORM:
-			return GeocrowdConstants.uniResolution;
+			return GeocrowdConstants.UNIFORM_GRID_RESOLUTION;
 		case SMALL_TEST:
-			return GeocrowdConstants.smallResolution;
+			return GeocrowdConstants.SMALL_GRID_RESOLUTION;
 		case YELP:
-			return YelpConstants.yelpResolution;
+			return YelpConstants.YELP_GRID_RESOLUTION;
 		}
 		return 0;
 	}

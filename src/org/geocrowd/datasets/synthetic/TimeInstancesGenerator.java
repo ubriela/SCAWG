@@ -55,29 +55,28 @@ public class TimeInstancesGenerator {
 		System.out.println();
 		ArrayList<Long> seeds = new ArrayList<>();
 		// compute seed for gaussian cluster
-		SpatialDistGenerator.gaussianCluster = gaussianCluster;
+		Distribution2DGenerator.gaussianCluster = gaussianCluster;
 		for (int i = 0; i < gaussianCluster; i++)
 			seeds.add((long) UniformGenerator.randomValue(new Range(0, 1000000), true));
-		SpatialDistGenerator.seeds = seeds;
+		Distribution2DGenerator.seeds = seeds;
 		
 		for (int i = 0; i < instances; i++) {
 			// update time instance
-			SpatialDistGenerator.time = i;
+			Distribution2DGenerator.time = i;
 			
 			// worker
-			SpatialDistGenerator wdg = new SpatialDistGenerator(workerPath + "workers" + i + ".txt");
+			Distribution2DGenerator wdg = new Distribution2DGenerator(workerPath + "workers" + i + ".txt");
 			wdg.distributionIndicator = 0;
 			wdg.varianceX = boundary.getHighPoint().getX();
 			wdg.varianceY = boundary.getHighPoint().getY();
 			wdg.generate2DDataset(workerCounts.get(i), boundary, workerDist);
 			
 			// task
-			SpatialDistGenerator tdg = new SpatialDistGenerator(taskPath + "tasks" + i + ".txt");
+			Distribution2DGenerator tdg = new Distribution2DGenerator(taskPath + "tasks" + i + ".txt");
 			tdg.distributionIndicator = 1;
 			tdg.varianceX = boundary.getHighPoint().getX();
 			tdg.varianceY = boundary.getHighPoint().getY();
 			tdg.generate2DDataset(taskCounts.get(i), boundary, taskDist);
 		}
 	}
-	
 }

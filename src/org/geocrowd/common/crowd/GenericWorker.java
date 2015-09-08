@@ -24,19 +24,19 @@ public class GenericWorker {
 	public String id;
 
 	/** The lat. */
-	public double lat;
+	protected double lat;
 
 	/** The lng. */
-	public double lng;
+	protected double lng;
 
 	/** The maximum number of tasks the worker can perform per time instance. */
-	public int capacity;
+	protected int capacity;
 
 	/**
 	 * The number indicate how active the worker is between 0 and 1. Active
 	 * workers are likely to travel and to perform tasks.
 	 */
-	public double activeness;
+	private double activeness;
 
 	/**
 	 * Instantiates a new generic worker.
@@ -45,6 +45,11 @@ public class GenericWorker {
 		super();
 	}
 
+	public GenericWorker(double lat, double lng) {
+		this.lat = lat;
+		this.lng = lng;
+	}
+	
 	/**
 	 * Instantiates a new generic worker.
 	 * 
@@ -132,4 +137,11 @@ public class GenericWorker {
 	public void setActiveness(double activeness) {
 		this.activeness = activeness;
 	}
+
+	@Override
+	public String toString() {
+		return getId() + "," + getLat() + "," + getLng() + ","
+				+ getCapacity() + "," + getActiveness();
+	}
+
 }

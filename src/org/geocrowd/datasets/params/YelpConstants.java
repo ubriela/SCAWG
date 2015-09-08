@@ -22,7 +22,7 @@ public class YelpConstants {
 	
 	// real dataset yelp
 	/** The yelp resolution. */
-	public static int yelpResolution = 1000;
+	public static int YELP_GRID_RESOLUTION = 1000;
 
 	/** The yelp entropy file name. */
 	public static String yelpEntropyFileName = "dataset/real/yelp/yelp_entropy.txt";

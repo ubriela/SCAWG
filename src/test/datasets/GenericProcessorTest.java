@@ -1,28 +1,27 @@
 /*******************************************************************************
-* @ Year 2013
-* This is the source code of the following papers. 
-* 
-* 1) Geocrowd: A Server-Assigned Crowdsourcing Framework. Hien To, Leyla Kazemi, Cyrus Shahabi.
-* 
-* 
-* Please contact the author Hien To, ubriela@gmail.com if you have any question.
-*
-* Contributors:
-* Hien To - initial implementation
-*******************************************************************************/
+ * @ Year 2013
+ * This is the source code of the following papers. 
+ * 
+ * 1) Geocrowd: A Server-Assigned Crowdsourcing Framework. Hien To, Leyla Kazemi, Cyrus Shahabi.
+ * 
+ * 
+ * Please contact the author Hien To, ubriela@gmail.com if you have any question.
+ *
+ * Contributors:
+ * Hien To - initial implementation
+ *******************************************************************************/
 package test.datasets;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Hashtable;
-
 import org.geocrowd.DatasetEnum;
-import org.geocrowd.Distribution1DEnum;
-import org.geocrowd.GeocrowdConstants;
-import org.geocrowd.common.crowd.ExpertWorker;
-import org.geocrowd.common.entropy.Coord;
-import org.geocrowd.common.entropy.Observation;
-import org.geocrowd.datasets.synthesis.gowalla.GowallaProcessor;
+import org.geocrowd.TaskCategoryEnum;
+import org.geocrowd.TaskDurationEnum;
+import org.geocrowd.TaskRadiusEnum;
+import org.geocrowd.TaskRewardEnum;
+import org.geocrowd.TaskType;
+import org.geocrowd.WorkerCapacityEnum;
+import org.geocrowd.WorkerIDEnum;
+import org.geocrowd.WorkerType;
+import org.geocrowd.WorkingRegionEnum;
 import org.geocrowd.datasets.synthetic.GenericProcessor;
 import org.junit.Test;
 
@@ -31,13 +30,11 @@ import org.junit.Test;
  * The Class PreProcessTest.
  */
 public class GenericProcessorTest {
-    
-    
-    public static void main(String[] args){
-        GenericProcessorTest preTest = new GenericProcessorTest();
-        preTest.testGenerateSynWorkersTasks();
-    }
 
+	public static void main(String[] args) {
+		GenericProcessorTest preTest = new GenericProcessorTest();
+		preTest.testGenerateSynWorkersTasks();
+	}
 
 	/**
 	 * Test generate syn workers tasks.
@@ -45,49 +42,14 @@ public class GenericProcessorTest {
 	@Test
 	public void testGenerateSynWorkersTasks() {
 
-		GenericProcessor prep = new GenericProcessor();
-		GenericProcessor.DATA_SET = DatasetEnum.SKEWED;
-		GeocrowdConstants.TIME_INSTANCE = 20;
-
-		prep.computeBoundary();
-		prep.readBoundary();
-		prep.createGrid();
-		
-		// generating workers
-		prep.workerIdDist = Distribution1DEnum.UNIFORM_1D;
-		prep.generateSynWorkers(true, true);
-		
-		// generate tasks
-		prep.generateSynTasks();
+		GenericProcessor prep = new GenericProcessor(1, 100000, DatasetEnum.SKEWED,
+				WorkerIDEnum.GAUSSIAN, WorkerType.EXPERT,
+				WorkingRegionEnum.CONSTANT, WorkerCapacityEnum.CONSTANT,
+				TaskType.EXPERT, TaskCategoryEnum.RANDOM,
+				TaskRadiusEnum.RANDOM, TaskRewardEnum.RANDOM, TaskDurationEnum.RANDOM);
 
 		// generating location density
-//		prep.saveLocationDensity(prep.computeLocationDensity());
-//		prep.regionEntropy();
-	}
-	
-	/**
-	 * Test generate syn workers tasks.
-	 */
-	@Test
-	public void testGenerateSynWorkersTasksGeorge() {
-
-		GenericProcessor prep = new GenericProcessor();
-		GenericProcessor.DATA_SET = DatasetEnum.SKEWED;
-		GeocrowdConstants.TIME_INSTANCE = 20;
-
-		prep.computeBoundary();
-		prep.readBoundary();
-		prep.createGrid();
-		
-		// generating workers
-		prep.workerIdDist = Distribution1DEnum.UNIFORM_1D;
-		prep.generateSynWorkers(true, true);
-		
-		// generate tasks
-		prep.generateSynTasks();
-
-		// generating location density
-//		prep.saveLocationDensity(prep.computeLocationDensity());
-//		prep.regionEntropy();
+		// prep.saveLocationDensity(prep.computeLocationDensity());
+		// prep.regionEntropy();
 	}
 }

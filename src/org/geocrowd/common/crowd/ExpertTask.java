@@ -53,6 +53,10 @@ public class ExpertTask extends GenericTask {
 		category = taskType;
 	}
 
+	public ExpertTask(double lat, double lng) {
+		super(lat, lng);
+	}
+
 	/**
 	 * Gets the task type.
 	 * 
@@ -65,6 +69,11 @@ public class ExpertTask extends GenericTask {
 	public void setCategory(int category) {
 		this.category = category;
 	}
-	
+
+	@Override
+	public String toString() {
+		return super.toString() + ","
+				+ getCategory();
+	}
 	
 }

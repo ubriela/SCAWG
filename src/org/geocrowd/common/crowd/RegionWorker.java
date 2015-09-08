@@ -24,7 +24,7 @@ package org.geocrowd.common.crowd;
 public class RegionWorker extends GenericWorker {
 	
 	/** The mbr. */
-	private WorkingRegion mbr;
+	private WorkingRegion mbr = null;
 	
 	/**
 	 * Instantiates a new region worker.
@@ -51,6 +51,10 @@ public class RegionWorker extends GenericWorker {
 		super(userID, lat, lng, capacity);
 		
 		this.mbr = mbr;
+	}
+
+	public RegionWorker(double lat, double lng) {
+		super(lat, lng);
 	}
 
 	/**
@@ -107,4 +111,15 @@ public class RegionWorker extends GenericWorker {
 	public void setMinLng(double l) {
 		mbr.setMinLng(l);
 	}
+
+	@Override
+	public String toString() {
+		if (getMbr() != null)
+			return super.toString() + ",[" + getMbr().getMinLat() + "," + getMbr().getMinLng()
+				+ "," + getMbr().getMaxLat() + "," + getMbr().getMaxLng() + "]";
+		else
+			return super.toString();
+	}
+	
+	
 }

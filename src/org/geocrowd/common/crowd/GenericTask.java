@@ -11,7 +11,7 @@ package org.geocrowd.common.crowd;
 
 import java.util.Random;
 
-import org.geocrowd.GeocrowdConstants;
+import org.geocrowd.datasets.params.GeocrowdConstants;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -44,7 +44,7 @@ public class GenericTask {
 	/**
 	 * the required number of assigned workers
 	 */
-	private int k;
+	private int requirement;
 
 	/**
 	 * how many times this task is assigned/performed. assigned = k means the
@@ -57,6 +57,13 @@ public class GenericTask {
 	 */
 	public GenericTask() {
 
+	}
+	
+	
+	public GenericTask(double lat, double lng) {
+		super();
+		this.lat = lat;
+		this.lng = lng;
 	}
 
 	/**
@@ -153,38 +160,19 @@ public class GenericTask {
 		expired = true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "lat: " + lat + "   lng: " + lng + "   time: " + arrivalTime
-				+ "    assigned: " + assigned + "    expired : " + expired;
-	}
-
-	/**
-	 *
-	 * @param k
-	 */
-	public void setK(int k) {
-		if (GeocrowdConstants.IS_RANDOM_K) {
-			this.k = k;
-		} else {
-			Random r = new Random();
-			this.k = r.nextInt(k) + 1;
-		}
-
-	}
-
 	/**
 	 * Gets the K.
 	 *
 	 * @return the k
 	 */
-	public int getK() {
-		return k;
+	public int getRequirement() {
+		return requirement;
+	}
+	
+	
+
+	public void setRequirement(int requirement) {
+		this.requirement = requirement;
 	}
 
 	/**
@@ -210,5 +198,15 @@ public class GenericTask {
 		this.id = id;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return getLat() + "," + getLng() + ","
+				+ getArrivalTime() + "," + getExpiryTime();
+	}
 	
 }

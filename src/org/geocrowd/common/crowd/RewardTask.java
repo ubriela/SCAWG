@@ -43,6 +43,10 @@ public class RewardTask extends GenericTask {
 		super();
 	}
 
+	public RewardTask(double lat, double lng) {
+		super(lat, lng);
+	}
+
 	/**
 	 * @return the reward
 	 */
@@ -57,5 +61,8 @@ public class RewardTask extends GenericTask {
 		mReward = reward;
 	}
 
-    
+	@Override
+	public String toString() {
+		return super.toString() + "," + mReward;
+	}
 }

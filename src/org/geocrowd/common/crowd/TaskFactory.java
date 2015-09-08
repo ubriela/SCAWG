@@ -14,18 +14,18 @@ import org.geocrowd.TaskType;
  *
  */
 public class TaskFactory {
-	public static GenericTask getTask(TaskType taskType) {
+	public static GenericTask getTask(TaskType taskType, double lat, double lng) {
 		if (taskType == null) {
 			return null;
 		}
 		if (taskType == TaskType.GENERIC) {
-			return new GenericTask();
+			return new GenericTask(lat, lng);
 		} else if (taskType == TaskType.EXPERT) {
-			return new ExpertTask();
+			return new ExpertTask(lat, lng);
 		} else if (taskType == TaskType.REWARD) {
-			return new RewardTask();
+			return new RewardTask(lat, lng);
 		} else if (taskType == TaskType.SENSING) {
-			return new SensingTask();
+			return new SensingTask(lat, lng);
 		}
 
 		return null;

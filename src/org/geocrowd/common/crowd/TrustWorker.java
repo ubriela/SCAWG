@@ -48,6 +48,10 @@ public class TrustWorker extends RegionWorker {
 		this.score = new WorkerScore();
 	}
 
+	public TrustWorker(double lat, double lng) {
+		super(lat, lng);
+	}
+
 	/**
 	 * Gets the score.
 	 * 
