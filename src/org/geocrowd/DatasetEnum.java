@@ -9,22 +9,22 @@
  *******************************************************************************/
 package org.geocrowd;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Enum DatasetEnum.
  */
 public enum DatasetEnum {
 
-	/** The skewed. */
+	FOURSQUARE,
 	SKEWED,
-	/** The uniform. */
 	UNIFORM,
-	/** The gowalla. */
 	GOWALLA,
-	/** The yelp. */
 	YELP,
-	/** The small. */
-	SMALL_TEST, 
 	
-	FOURSQUARE
+	/** The small dataset used to test program. */
+	SMALL_TEST,
+
+	/**
+	 * Scaling small dataset to large dataset
+	 */
+	SCALE
 }

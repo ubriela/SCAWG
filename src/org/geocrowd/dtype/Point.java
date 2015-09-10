@@ -12,8 +12,6 @@
 *******************************************************************************/
 package org.geocrowd.dtype;
 
-import java.io.Serializable;
-
 // TODO: Auto-generated Javadoc
 /**
  * two dimensional data type.

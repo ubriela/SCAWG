@@ -24,11 +24,11 @@ public class RouletteWheelGenerator<T> extends Stats<T>{
 		// normalized N
 		sum = sum(Arrays.asList(N));
 		double tmp = 0.0;
-		min = (Double) N[0];
+		min = Double.parseDouble(N[0].toString());
 		S = new double[N.length + 1];
 		S[0] = 0;
 		for (int i = 0; i < N.length; i++) {
-			tmp += (Double)N[i];
+			tmp += Double.parseDouble(N[i].toString());
 			S[i + 1] = tmp;
 		}
 	}

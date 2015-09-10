@@ -171,7 +171,7 @@ public class GowallaProcessor extends GenericProcessor {
 			BufferedReader in = new BufferedReader(file);
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(delimiter.toString());
+				String[] parts = line.split(GeocrowdConstants.delimiter.toString());
 				Double lat = Double.parseDouble(parts[0]);
 				Double lng = Double.parseDouble(parts[1]);
 				int row = latToRowIdx(lat);
@@ -499,7 +499,7 @@ public class GowallaProcessor extends GenericProcessor {
 			int cnt = 0;
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(delimiter.toString());
+				String[] parts = line.split(GeocrowdConstants.delimiter.toString());
 				Integer userID = Integer.parseInt(parts[0]);
 				Double lat = Double.parseDouble(parts[2]);
 				Double lng = Double.parseDouble(parts[3]);
@@ -547,7 +547,7 @@ public class GowallaProcessor extends GenericProcessor {
 					GeocrowdConstants.TASK_CATEGORY_NUMBER);
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(delimiter.toString());
+				String[] parts = line.split(GeocrowdConstants.delimiter.toString());
 				String[] DateTimeStr = parts[1].split("T");
 				Date date = Date.valueOf(DateTimeStr[0]);
 				

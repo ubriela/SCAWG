@@ -44,6 +44,7 @@ import org.geocrowd.dtype.GenericPoint;
 import org.geocrowd.dtype.Point;
 import org.geocrowd.dtype.Rectangle;
 import org.geocrowd.dtype.ValueFreq;
+import org.tc33.jheatchart.HeatChart;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -636,6 +637,8 @@ public class Utils {
 			return "dataset/skew/worker/skew_workers";
 		case UNIFORM:
 			return "dataset/uni/worker/uni_workers";
+		case SCALE:
+			return "dataset/scale/worker/scale_workers";
 		}
 		return "";
 	}
@@ -658,6 +661,8 @@ public class Utils {
 			return "dataset/skew/task/skew_tasks";
 		case UNIFORM:
 			return "dataset/uni/task/uni_tasks";
+		case SCALE:
+			return "dataset/scale/task/scale_tasks";
 		}
 		return "";
 	}
@@ -676,6 +681,8 @@ public class Utils {
 			return "dataset/small/small_boundary.txt";
 		case YELP:
 			return "dataset/real/yelp/yelp_boundary.txt";
+		case SCALE:
+			return "dataset/scale/scale_boundary.txt";
 		}
 		return "";
 	}
@@ -693,6 +700,8 @@ public class Utils {
 			return GeocrowdConstants.SMALL_GRID_RESOLUTION;
 		case YELP:
 			return YelpConstants.YELP_GRID_RESOLUTION;
+		case SCALE:
+			return GeocrowdConstants.SCALE_GRID_RESOLUTION;
 		}
 		return 0;
 	}
@@ -726,6 +735,35 @@ public class Utils {
 		}
 
 		return new Rectangle(minLat, minLng, maxLat, maxLng);
+	}
+
+	/**
+	 * Create heatmap image from a matrix
+	 * http://www.tc33.org/projects/jheatchart/
+	 * @param data
+	 * @param fileName
+	 */
+	public static void createHeatMap(int[][] data, String fileName) {
+
+		// Create our heat map chart using our data.
+		double[][] tmp_data = new double[data.length][data[0].length];
+		for (int i = 0; i < data.length; i++) 
+			for (int j = 0; j < data[0].length; j++)
+				tmp_data[i][j] = data[i][j];
+		HeatChart map = new HeatChart(tmp_data);
+
+		// Customise the chart.
+		map.setTitle("Title");
+		map.setXAxisLabel("X");
+		map.setYAxisLabel("Y");
+
+		// Output the chart to a file.
+		try {
+			map.saveToFile(new File("./res/graph/hists/twod/" + fileName));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	// http://en.wikipedia.org/wiki/Zipf's_law

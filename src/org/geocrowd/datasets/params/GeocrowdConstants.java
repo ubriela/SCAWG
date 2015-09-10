@@ -16,6 +16,8 @@ package org.geocrowd.datasets.params;
  */
 public class GeocrowdConstants {
 
+	public static Character delimiter = '\t';
+
 	/** The number of time instances. */
 	public static int TIME_INSTANCE = 280;
 	
@@ -59,10 +61,19 @@ public class GeocrowdConstants {
 
 	/** The uni resolution. */
 	public static int UNIFORM_GRID_RESOLUTION = 100;
+	
+	
+	public static final int SCALE_GRID_RESOLUTION = 500;
 
 	/** The worker file path. */
 	public static String WORKER_FILE_PATH = "./res/dataset/worker/workers";
 
-	/** The matlab task file path. */
+	/** The task file path. */
 	public static String TASK_FILE_PATH = "./res/dataset/task/tasks";
+	
+	/** The worker file path. */
+	public static String WORKER_SCALE_FILE_PATH = "./dataset/scale/worker_dist.txt";
+
+	/** The task file path. */
+	public static String TASK_SCALE_FILE_PATH = "./dataset/scale/task_dist.txt";
 }

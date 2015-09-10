@@ -7,9 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 
-import org.fife.ui.rsyntaxtextarea.parser.TaskTagParser;
 import org.geocrowd.DatasetEnum;
-import org.geocrowd.Distribution1DEnum;
 import org.geocrowd.TaskCategoryEnum;
 import org.geocrowd.TaskDurationEnum;
 import org.geocrowd.TaskRadiusEnum;
@@ -34,11 +32,8 @@ import org.geocrowd.common.utils.TaskUtility;
 import org.geocrowd.common.utils.Utils;
 import org.geocrowd.datasets.params.GeocrowdConstants;
 import org.geocrowd.datasets.params.GeocrowdSensingConstants;
-import org.geocrowd.dtype.Range;
 
 public class GenericProcessor {
-
-	public static Character delimiter = '\t';
 
 	public int uniqueWorkerCount = 0;
 	public WorkerIDEnum workerIdDist = WorkerIDEnum.UNIFORM;
@@ -80,15 +75,42 @@ public class GenericProcessor {
 
 	protected TaskDurationEnum taskDurationDistribution = TaskDurationEnum.CONSTANT;
 
-
 	public GenericProcessor() {
 		super();
 	}
 
-	public GenericProcessor(int instances, int uniqueWorkerCount, DatasetEnum dataset,
-			WorkerIDEnum workerIdDist, WorkerType workerType,
-			WorkingRegionEnum mbrType, WorkerCapacityEnum capacityType,
-			TaskType taskType, TaskCategoryEnum taskCategoryType,
+	/**
+	 * 
+	 * @param instances
+	 *            : number of time instances
+	 * @param uniqueWorkerCount
+	 *            : the unique number of workers
+	 * @param dataset
+	 *            : dataset name, e.g., SKEWED, UNIFORM
+	 * @param workerIdDist
+	 *            : worker id distribution
+	 * @param workerType
+	 *            : worker type, e.g., GENERIC, EXPERT
+	 * @param mbrType
+	 *            : distribution of worker's working region
+	 * @param capacityType
+	 *            : distribution type of worker capacity
+	 * @param taskType
+	 *            : task type, e.g., GENERIC, EXPERT
+	 * @param taskCategoryType
+	 *            : distribution of task type
+	 * @param taskRadiusDistribution
+	 *            : distribution of task radius
+	 * @param taskRewardDistribution
+	 *            : distribution of task reward
+	 * @param taskDurationDistribution
+	 *            : distribution of task duration
+	 */
+	public GenericProcessor(int instances, int uniqueWorkerCount,
+			DatasetEnum dataset, WorkerIDEnum workerIdDist,
+			WorkerType workerType, WorkingRegionEnum mbrType,
+			WorkerCapacityEnum capacityType, TaskType taskType,
+			TaskCategoryEnum taskCategoryType,
 			TaskRadiusEnum taskRadiusDistribution,
 			TaskRewardEnum taskRewardDistribution,
 			TaskDurationEnum taskDurationDistribution) {
@@ -108,20 +130,34 @@ public class GenericProcessor {
 
 		generateData();
 	}
-	
-	public GenericProcessor(int instances, DatasetEnum dataset, WorkerType workerType, TaskType taskType, TaskCategoryEnum taskCategory) {
+
+	/**
+	 * 
+	 * @param instances
+	 *            : number of time instances
+	 * @param dataset
+	 *            : dataset name, e.g., SKEWED, UNIFORM
+	 * @param workerType
+	 *            : worker type, e.g., GENERIC, EXPERT
+	 * @param taskType
+	 *            : task type, e.g., GENERIC, EXPERT
+	 * @param taskCategoryType
+	 *            : distribution of task type
+	 */
+	public GenericProcessor(int instances, DatasetEnum dataset,
+			WorkerType workerType, TaskType taskType,
+			TaskCategoryEnum taskCategoryType) {
 		super();
 		GeocrowdConstants.TIME_INSTANCE = instances;
 		this.DATA_SET = dataset;
 		this.workerType = workerType;
 		this.taskType = taskType;
-		this.taskCategoryType = taskCategory;
-		
+		this.taskCategoryType = taskCategoryType;
+
 		computeBoundary();
 		readBoundary();
 		createGrid();
 	}
-	
 
 	private void generateData() {
 		computeBoundary();
@@ -149,7 +185,7 @@ public class GenericProcessor {
 				BufferedReader in = new BufferedReader(reader);
 				while (in.ready()) {
 					String line = in.readLine();
-					String[] parts = line.split(delimiter.toString());
+					String[] parts = line.split(GeocrowdConstants.delimiter.toString());
 					Double lat = Double.parseDouble(parts[0]);
 					Double lng = Double.parseDouble(parts[1]);
 
@@ -223,7 +259,7 @@ public class GenericProcessor {
 					GeocrowdConstants.MAX_WORKER_CAPACITY);
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(delimiter.toString());
+				String[] parts = line.split(GeocrowdConstants.delimiter.toString());
 
 				GenericWorker w = WorkerFactory.getWorker(workerType,
 						Double.parseDouble(parts[0]),
@@ -232,11 +268,11 @@ public class GenericProcessor {
 				WorkerIDGenerator widGenerator = new WorkerIDGenerator(
 						workerIdDist, uniqueWorkerCount);
 				int workerId = widGenerator.nextWorkerId();
-				w.setActiveness(widGenerator.getWorkerIdToActiveness().get(workerId));
+				w.setActiveness(widGenerator.getWorkerIdToActiveness().get(
+						workerId));
 
 				if (workerType == WorkerType.REGION
-						|| workerType == WorkerType.EXPERT
-						|| workerType == WorkerType.SENSING) {
+						|| workerType == WorkerType.EXPERT) {
 					RegionWorker rw = (RegionWorker) w;
 					WorkingRegionGenerator wrGen = new WorkingRegionGenerator(
 							minLat, minLng, maxLat, maxLng);
@@ -273,15 +309,17 @@ public class GenericProcessor {
 			BufferedReader in = new BufferedReader(reader);
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(delimiter.toString());
+				String[] parts = line.split(GeocrowdConstants.delimiter.toString());
 				GenericTask t = TaskFactory.getTask(taskType,
 						Double.parseDouble(parts[0]),
 						Double.parseDouble(parts[1]));
 
-				TaskDurationGenerator tdGen = new TaskDurationGenerator(GeocrowdConstants.MAX_TASK_DURATION);
-	
+				TaskDurationGenerator tdGen = new TaskDurationGenerator(
+						GeocrowdConstants.MAX_TASK_DURATION);
+
 				t.setArrivalTime(timeCounter);
-				t.setExpiryTime(t.getArrivalTime() + tdGen.nextTaskDuration(taskDurationDistribution));
+				t.setExpiryTime(t.getArrivalTime()
+						+ tdGen.nextTaskDuration(taskDurationDistribution));
 
 				if (taskType == TaskType.EXPERT) {
 					ExpertTask et = (ExpertTask) t;
@@ -365,7 +403,7 @@ public class GenericProcessor {
 				BufferedReader in = new BufferedReader(file);
 				while (in.ready()) {
 					String line = in.readLine();
-					String[] parts = line.split(delimiter.toString());
+					String[] parts = line.split(GeocrowdConstants.delimiter.toString());
 					Double lat = Double.parseDouble(parts[0]);
 					Double lng = Double.parseDouble(parts[1]);
 					int row = latToRowIdx(lat);

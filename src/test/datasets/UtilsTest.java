@@ -8,6 +8,10 @@ import org.geocrowd.common.crowd.RegionWorker;
 import org.geocrowd.common.crowd.WorkerFactory;
 import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.common.utils.Utils;
+import org.geocrowd.datasets.synthetic.grid.DataProvider;
+import org.geocrowd.datasets.synthetic.grid.EquiSizedGrid;
+import org.geocrowd.dtype.Point;
+import org.geocrowd.dtype.Rectangle;
 import org.geocrowd.dtype.ValueFreq;
 import org.junit.Test;
 
@@ -51,5 +55,21 @@ public class UtilsTest {
 		double find = 3.5;
 		Utils util = new Utils();
 		System.out.println(util.binarySearchCeilBias(biasValues, find));
+	}
+	
+	@Test
+	public final void testEquiSizedGrid() {
+		DataProvider md = new DataProvider(
+				"./dataset/scale/worker_dist.txt", 2);
+		Rectangle boundary = new Rectangle(new Point(md.min_x, md.min_y),
+				new Point(md.max_x, md.max_y));
+		EquiSizedGrid equiSizedGrid = new EquiSizedGrid(boundary,
+				md.dim_size_x, md.dim_size_y);
+		System.out.println("Size: " + md.points.size());
+		equiSizedGrid.populate(md.points);
+		int[][] stats = equiSizedGrid.histCount();
+
+		// Utils.print(stats);
+		Utils.createHeatMap(stats, "worker-hist.jpg");
 	}
 }

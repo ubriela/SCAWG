@@ -20,6 +20,10 @@ import org.geocrowd.Distribution2DEnum;
 import org.geocrowd.common.utils.MurmurHash;
 import org.geocrowd.common.utils.Stats;
 import org.geocrowd.common.utils.Utils;
+import org.geocrowd.datasets.params.GeocrowdConstants;
+import org.geocrowd.datasets.synthetic.grid.DataProvider;
+import org.geocrowd.datasets.synthetic.grid.EquiSizedGrid;
+import org.geocrowd.datasets.synthetic.grid.GridCellMem;
 import org.geocrowd.dtype.DataTypeEnum;
 import org.geocrowd.dtype.Point;
 import org.geocrowd.dtype.Range;
@@ -38,14 +42,14 @@ public class Distribution2DGenerator {
 	public static int time = 0;
 	public static int gaussianCluster = 4;
 	public static ArrayList<Long> seeds;
+	// to distinguish between worker and task distributions
 	public int distributionIndicator = 0;
 
 	private String filePath = "";
-	private Character delimiter = '\t';
 
 	public Distribution2DGenerator() {
 	}
-	
+
 	public Distribution2DGenerator(String filePath) {
 		this.filePath = filePath;
 	}
@@ -53,14 +57,14 @@ public class Distribution2DGenerator {
 	/**
 	 * Generate uniform points
 	 * 
-	 * @param n
+	 * @param size
 	 * @param boundary
 	 * @return
 	 */
-	private Vector<Point> generateUniformPoints(int n, Rectangle boundary) {
+	private Vector<Point> generateUniformPoints(int size, Rectangle boundary) {
 		Vector<Point> points = new Vector<Point>();
 
-		for (int i = 0; i < n; i++) {
+		for (int i = 0; i < size; i++) {
 			Point point = UniformGenerator.randomPoint(boundary, false);
 			points.add(point);
 		}
@@ -75,40 +79,42 @@ public class Distribution2DGenerator {
 	 * @param boundary
 	 * @return
 	 */
-	public  double varianceX=-1;
-	public  double varianceY=-1;
-	private Vector<Point> generateMultivarDataset(int n, Rectangle boundary) {
+	public double varianceX = -1;
+	public double varianceY = -1;
+
+	private Vector<Point> generateMultivarDataset(int size, Rectangle boundary) {
 		Vector<Point> points = new Vector<Point>();
-		if (n == 0)
+		if (size == 0)
 			return points;
-		
+
 		for (int c = 0; c < gaussianCluster; c++) {
 			Point mPoint = UniformGenerator.randomPoint(boundary, false,
-					seeds.get(c) + distributionIndicator);	// same centroid for all time instances
+					seeds.get(c) + distributionIndicator); // same centroid for
+															// all time
+															// instances
 			double[] means = { mPoint.getX(), mPoint.getY() };
 			// mPoint.debug();
-			//System.out.println(boundary.getHighPoint().getX());
-			
+			// System.out.println(boundary.getHighPoint().getX());
+
 			double[][] covariances = { { boundary.getHighPoint().getX(), 0 },
 					{ 0, boundary.getHighPoint().getY() } };
-			
+
 			/**
 			 * If variance is not set from outside
 			 */
-			if(varianceX > -1)
-			{
-				covariances[0][0]= varianceX*Math.pow(c+1, 2);
-				covariances[1][1]= varianceY*Math.pow(c+1, 2);
+			if (varianceX > -1) {
+				covariances[0][0] = varianceX * Math.pow(c + 1, 2);
+				covariances[1][1] = varianceY * Math.pow(c + 1, 2);
 			}
-			
+
 			MultivariateNormalDistribution mvd = new MultivariateNormalDistribution(
 					means, covariances);
 			int samples = 0;
 			if (c == gaussianCluster - 1)
-				samples = n - ((int) (n / gaussianCluster))
+				samples = size - ((int) (size / gaussianCluster))
 						* (gaussianCluster - 1);
 			else
-				samples = n / gaussianCluster;
+				samples = size / gaussianCluster;
 			if (samples == 0)
 				continue;
 			double[][] data = mvd.sample(samples);
@@ -193,7 +199,7 @@ public class Distribution2DGenerator {
 				for (int i = start; i <= end; i++) {
 					weights[i - start] = i; // populate a list of weights
 					probList[i - start] = zipf.probability(i); // get the
-																	// probability
+																// probability
 					// of each weight,
 					// smaller weight
 					// appears more
@@ -217,26 +223,25 @@ public class Distribution2DGenerator {
 	/**
 	 * Generate two dimensional data that follows zipf distribution
 	 * 
-	 * @param n
+	 * @param size
 	 * @param boundary
 	 * @return
 	 */
-	private Vector<Point> generateZipfPoints(int n, Rectangle boundary) {
+	private Vector<Point> generateZipfPoints(int size, Rectangle boundary) {
 		Vector<Point> points = new Vector<Point>();
 		ZipfDistribution zipf = new ZipfDistribution(2, 1);
 		Random r = new Random();
-		for (int i = 1; i <= n; i++) {
-			double x = i * boundary.deltaX() / n
+		for (int i = 1; i <= size; i++) {
+			double x = i * boundary.deltaX() / size
 					+ boundary.getLowPoint().getX();
 			r.setSeed(System.nanoTime());
-			double y = zipf.probability(i) * r.nextDouble()
-					* boundary.deltaY() + boundary.getLowPoint().getY();
+			double y = zipf.probability(i) * r.nextDouble() * boundary.deltaY()
+					+ boundary.getLowPoint().getY();
 			points.add(new Point(x, y));
 		}
 
 		return points;
 	}
-
 
 	/**
 	 * Generate zipf distribution
@@ -385,13 +390,13 @@ public class Distribution2DGenerator {
 	/**
 	 * generate charminar points
 	 * 
-	 * @param n
+	 * @param size
 	 * @param boundary
 	 * @param dim_size_x
 	 * @param dim_size_y
 	 * @return
 	 */
-	private Vector<Point> generateCharminarPoints(int n, Rectangle boundary,
+	private Vector<Point> generateCharminarPoints(int size, Rectangle boundary,
 			int dim_size_x, int dim_size_y) {
 		Vector<Point> points = new Vector<Point>();
 		double scale_x = boundary.deltaX() / dim_size_x;
@@ -419,7 +424,7 @@ public class Distribution2DGenerator {
 			double y2 = (index_y + 1) * scale_y + boundary.getLowPoint().getY();
 			points.add(UniformGenerator.randomPoint(new Rectangle(x1, y1, x2,
 					y2), false));
-			if (count++ == n)
+			if (count++ == size)
 				break;
 
 			// upper left
@@ -430,7 +435,7 @@ public class Distribution2DGenerator {
 			y2 = (index_y + 1) * scale_y + boundary.getLowPoint().getY();
 			points.add(UniformGenerator.randomPoint(new Rectangle(x1, y1, x2,
 					y2), false));
-			if (count++ == n)
+			if (count++ == size)
 				break;
 
 			// upper right
@@ -441,7 +446,7 @@ public class Distribution2DGenerator {
 			y2 = (index_y + 1) * scale_y + boundary.getLowPoint().getY();
 			points.add(UniformGenerator.randomPoint(new Rectangle(x1, y1, x2,
 					y2), false));
-			if (count++ == n)
+			if (count++ == size)
 				break;
 
 			// below right
@@ -452,7 +457,7 @@ public class Distribution2DGenerator {
 			y2 = (index_y + 1) * scale_y + boundary.getLowPoint().getY();
 			points.add(UniformGenerator.randomPoint(new Rectangle(x1, y1, x2,
 					y2), false));
-			if (count++ == n)
+			if (count++ == size)
 				break;
 
 		}
@@ -579,7 +584,7 @@ public class Distribution2DGenerator {
 
 	/**
 	 * 
-	 * @param n
+	 * @param size
 	 * @param boundary
 	 * @param uni_x_count
 	 *            : the number of distinct values in x coord
@@ -588,8 +593,9 @@ public class Distribution2DGenerator {
 	 * @param isInteger
 	 * @return
 	 */
-	private Vector<Point> generateNonDistinctDataset(int n, Rectangle boundary,
-			int uni_x_count, int uni_y_count, boolean isInteger) {
+	private Vector<Point> generateNonDistinctDataset(int size,
+			Rectangle boundary, int uni_x_count, int uni_y_count,
+			boolean isInteger) {
 		Vector<Point> points = new Vector<Point>();
 		Vector<Double> distinct_x = UniformGenerator.randomSequence(
 				uni_x_count, boundary.getLowPoint().getX(), boundary
@@ -600,7 +606,7 @@ public class Distribution2DGenerator {
 
 		Random r = new Random();
 		r.setSeed(System.nanoTime());
-		for (int i = 1; i <= n; i++) {
+		for (int i = 1; i <= size; i++) {
 			Point point = new Point(distinct_x.get(r.nextInt(uni_x_count)),
 					distinct_y.get(r.nextInt(uni_y_count)));
 			points.add(point);
@@ -609,12 +615,10 @@ public class Distribution2DGenerator {
 		return points;
 	}
 
-
-
 	/**
 	 * Generate two-dimensional datasets
 	 * 
-	 * @param n
+	 * @param size
 	 *            : the number of data points
 	 * @param min_x
 	 * @param max_x
@@ -622,28 +626,28 @@ public class Distribution2DGenerator {
 	 * @param max_y
 	 * @param dist
 	 */
-	public void generate2DDataset(int n, Rectangle boundary,
+	public void generate2DDataset(int size, Rectangle boundary,
 			Distribution2DEnum dist) {
 		Vector<Point> points = null;
 
 		switch (dist) {
 		case UNIFORM_2D: // uniform two-dimensional distribution
-			points = generateUniformPoints(n, boundary);
+			points = generateUniformPoints(size, boundary);
 			break;
 		case ZIPFIAN_2D: // zipf two-dimensional distribution
-			points = generateZipfPoints(n, boundary);
+			points = generateZipfPoints(size, boundary);
 			break;
 		case CHARMINAR_2D: // charminar two-dimensional dataset
-			points = generateCharminarPoints(n, boundary, 100, 100);
+			points = generateCharminarPoints(size, boundary, 100, 100);
 			break;
 		case GAUSSIAN_2D: // multivariate gaussian distribution
-			points = generateMultivarDataset(n, boundary);
+			points = generateMultivarDataset(size, boundary);
 			break;
 		case MIXTURE_GAUSSIAN_UNIFORM:
-			points = generateMixture(n, boundary);
+			points = generateMixture(size, boundary);
 			break;
 		case UNIFORM_INT_2D: // non-distinct two-dimensional dataset
-			points = generateNonDistinctDataset(n, boundary, 100, 100, true);
+			points = generateNonDistinctDataset(size, boundary, 100, 100, true);
 			break;
 		}
 		writePointsToFile(points, filePath);
@@ -651,17 +655,59 @@ public class Distribution2DGenerator {
 	}
 
 	/**
-	 * Half gaussian half uniform
-	 * @param n
+	 * 
+	 * @param size
+	 *            : the number of data points
+	 * @param filePathIn
+	 *            : file with small data points
+	 */
+	public void generate2DDataset(Integer size, String filePathIn) {
+
+		DataProvider md = new DataProvider(filePathIn, 2);
+		Rectangle boundary = new Rectangle(new Point(md.min_x, md.min_y),
+				new Point(md.max_x, md.max_y));
+		EquiSizedGrid equiSizedGrid = new EquiSizedGrid(boundary,
+				md.dim_size_x, md.dim_size_y);
+		equiSizedGrid.populate(md.points);
+		int[][] stats = equiSizedGrid.histCount();
+
+		Integer[] arr = new Integer[stats[0].length * stats.length];
+		for (int i = 0; i < stats.length; i++)
+			for (int j = 0; j < stats[0].length; j++)
+				arr[i * stats[0].length + j] = stats[i][j];
+		RouletteWheelGenerator rwGen = new RouletteWheelGenerator<Integer>(arr);
+
+		Vector<Point> points = new Vector<Point>();
+
+		UniformGenerator uniGenerator = new UniformGenerator();
+		for (int i = 0; i < size; i++) {
+			int index = rwGen.nextValue();
+			int x = index / stats.length;
+			int y = index - x * stats.length;
+			GridCellMem cell = equiSizedGrid.getGrid()[x][y];
+
+			Point pt = uniGenerator.randomPoint(cell, false);
+			points.add(pt);
+		}
+
+		writePointsToFile(points, filePath);
+	}
+
+	/**
+	 * Half Gaussian half uniform
+	 * 
+	 * @param size
 	 * @param boundary
 	 * @return
 	 */
-	private Vector<Point> generateMixture(int n, Rectangle boundary) {
+	private Vector<Point> generateMixture(int size, Rectangle boundary) {
 		Vector<Point> points = new Vector<Point>();
-		int gaussian_count = 9*n / 10;
-		int uniform_count = n - gaussian_count;
-		Vector<Point> gaussian_points = generateMultivarDataset(gaussian_count, boundary);
-		Vector<Point> uniform_points = generateUniformPoints(uniform_count, boundary);
+		int gaussian_count = 9 * size / 10;
+		int uniform_count = size - gaussian_count;
+		Vector<Point> gaussian_points = generateMultivarDataset(gaussian_count,
+				boundary);
+		Vector<Point> uniform_points = generateUniformPoints(uniform_count,
+				boundary);
 		points.addAll(gaussian_points);
 		points.addAll(uniform_points);
 		return points;
@@ -717,7 +763,8 @@ public class Distribution2DGenerator {
 			Iterator<Point> it = points.iterator();
 			while (it.hasNext()) {
 				Point point = (Point) it.next();
-				sb.append(point.getX() + delimiter.toString() + point.getY());
+				sb.append(point.getX() + GeocrowdConstants.delimiter.toString()
+						+ point.getY());
 
 				if (it.hasNext())
 					sb.append("\n");
@@ -728,7 +775,7 @@ public class Distribution2DGenerator {
 		} catch (Exception e) {// Catch exception if any
 			System.err.println("Error: " + e.getMessage());
 		}
-//		System.out.println("Dataset created!");
+		// System.out.println("Dataset created!");
 	}
 
 	/**
@@ -748,8 +795,10 @@ public class Distribution2DGenerator {
 			Iterator<Point> it = points.iterator();
 			while (it.hasNext()) {
 				Point point = (Point) it.next();
-				sb.append(i++ + delimiter.toString() + +point.getX()
-						+ delimiter.toString() + +point.getY());
+				sb.append(i++ + GeocrowdConstants.delimiter.toString()
+						+ +point.getX()
+						+ GeocrowdConstants.delimiter.toString()
+						+ +point.getY());
 
 				if (it.hasNext())
 					sb.append('\n');

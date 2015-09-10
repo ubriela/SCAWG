@@ -1,5 +1,7 @@
 package org.geocrowd.datasets.synthetic;
 
+
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -7,9 +9,9 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Vector;
 
+import org.geocrowd.datasets.params.GeocrowdConstants;
 import org.geocrowd.dtype.Point;
 import org.geocrowd.dtype.WeightedPoint;
-
 
 
 /**
@@ -21,9 +23,8 @@ import org.geocrowd.dtype.WeightedPoint;
 public class PointFileReader {
 	public String filePath = "";
 
-	public Character delimiter = '\t';
-	
 	double max_x, max_y, min_x, min_y;
+	int dim_size_x, dim_size_y;
 
 	public double getMax_x() {
 		return max_x;
@@ -39,6 +40,14 @@ public class PointFileReader {
 
 	public double getMin_y() {
 		return min_y;
+	}
+
+	public int getDim_size_x() {
+		return dim_size_x;
+	}
+
+	public int getDim_size_y() {
+		return dim_size_y;
 	}
 
 	public PointFileReader(String filePath) {
@@ -66,10 +75,13 @@ public class PointFileReader {
 			String strLine;
 			// Read File Line By Line
 			strLine = br.readLine();
+			String[] dims = strLine.split(GeocrowdConstants.delimiter.toString());
+			dim_size_x = Integer.valueOf(dims[0]);
+			dim_size_y = Integer.valueOf(dims[1]);
 
 			while ((strLine = br.readLine()) != null) {
 				// Print the content on the console
-				String[] tmp_dims = strLine.split(delimiter.toString());
+				String[] tmp_dims = strLine.split(GeocrowdConstants.delimiter.toString());
 				final double x = Double.parseDouble(tmp_dims[0]);
 				final double y = Double.parseDouble(tmp_dims[1]);
 
@@ -118,11 +130,13 @@ public class PointFileReader {
 			String strLine;
 			// Read File Line By Line
 			strLine = br.readLine();
-			String[] dims = strLine.split(delimiter.toString());
+			String[] dims = strLine.split(GeocrowdConstants.delimiter.toString());
+			dim_size_x = Integer.valueOf(dims[0]);
+			dim_size_y = Integer.valueOf(dims[1]);
 
 			while ((strLine = br.readLine()) != null) {
 				// Print the content on the console
-				String[] tmp_dims = strLine.split(delimiter.toString());
+				String[] tmp_dims = strLine.split(GeocrowdConstants.delimiter.toString());
 				final double x = Double.parseDouble(tmp_dims[0]);
 				final double y = Double.parseDouble(tmp_dims[1]);
 				final double w = Double.parseDouble(tmp_dims[2]);	//	weight
