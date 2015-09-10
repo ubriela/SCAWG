@@ -84,6 +84,6 @@ public class SensingTask extends GenericTask {
 
 	@Override
 	public String toString() {
-		return super.toString() + "," + getRadius();
+		return super.toString() + GeocrowdConstants.delimiter_dataset + getRadius();
 	}
 }

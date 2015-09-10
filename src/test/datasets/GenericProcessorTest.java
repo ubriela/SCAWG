@@ -60,13 +60,11 @@ public class GenericProcessorTest {
 	public final void testGenerateScale2DPoints() {
 		
 		ArrivalRateGenerator.time_instances_per_cycle = 7;
-		int instances = ArrivalRateGenerator.time_instances_per_cycle * 260;
+		int instances = ArrivalRateGenerator.time_instances_per_cycle * 8;
 		ScalingDataProcessor scale = new ScalingDataProcessor(instances,
-				ArrivalRateEnum.CONSTANT, ArrivalRateEnum.CONSTANT, 500, 1000, "./res/dataset/worker/",
+				ArrivalRateEnum.CONSTANT, ArrivalRateEnum.COSINE, 500, 1000, "./res/dataset/worker/",
 				"./res/dataset/task/");
 	}
-	
-	public static String WORKER_FILE_PATH = "./res/dataset/worker/workers";
 	
 	/**
 	 * Test generate syn workers tasks.
@@ -74,9 +72,9 @@ public class GenericProcessorTest {
 	@Test
 	public void testGenerateSynWorkersTasks() {
 		ArrivalRateGenerator.time_instances_per_cycle = 7;
-		int instances = ArrivalRateGenerator.time_instances_per_cycle * 260;
-		GenericProcessor prep = new GenericProcessor(1, 100000, DatasetEnum.SCALE,
-				WorkerIDEnum.GAUSSIAN, WorkerType.SENSING,
+		int instances = ArrivalRateGenerator.time_instances_per_cycle * 8;
+		GenericProcessor prep = new GenericProcessor(instances, 100000, DatasetEnum.SCALE,
+				WorkerIDEnum.GAUSSIAN, WorkerType.EXPERT,
 				WorkingRegionEnum.CONSTANT, WorkerCapacityEnum.CONSTANT,
 				TaskType.SENSING, TaskCategoryEnum.RANDOM,
 				TaskRadiusEnum.RANDOM, TaskRewardEnum.RANDOM, TaskDurationEnum.RANDOM);

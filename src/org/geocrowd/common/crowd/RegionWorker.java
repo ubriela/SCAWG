@@ -12,7 +12,7 @@
 *******************************************************************************/
 package org.geocrowd.common.crowd;
 
-
+import org.geocrowd.datasets.params.GeocrowdConstants;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -115,8 +115,8 @@ public class RegionWorker extends GenericWorker {
 	@Override
 	public String toString() {
 		if (getMbr() != null)
-			return super.toString() + ",[" + getMbr().getMinLat() + "," + getMbr().getMinLng()
-				+ "," + getMbr().getMaxLat() + "," + getMbr().getMaxLng() + "]";
+			return super.toString() + GeocrowdConstants.delimiter_dataset + "[" + getMbr().getMinLat() + GeocrowdConstants.delimiter_dataset + getMbr().getMinLng()
+				+ GeocrowdConstants.delimiter_dataset + getMbr().getMaxLat() + GeocrowdConstants.delimiter_dataset + getMbr().getMaxLng() + "]";
 		else
 			return super.toString();
 	}

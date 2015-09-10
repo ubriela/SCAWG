@@ -205,8 +205,8 @@ public class GenericTask {
 	 */
 	@Override
 	public String toString() {
-		return getLat() + "," + getLng() + ","
-				+ getArrivalTime() + "," + getExpiryTime();
+		return getLat() + GeocrowdConstants.delimiter_dataset + getLng() + GeocrowdConstants.delimiter_dataset
+				+ getArrivalTime() + GeocrowdConstants.delimiter_dataset + getExpiryTime();
 	}
 	
 }

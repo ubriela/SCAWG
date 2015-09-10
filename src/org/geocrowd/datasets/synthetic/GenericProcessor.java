@@ -257,6 +257,8 @@ public class GenericProcessor {
 			BufferedReader in = new BufferedReader(reader);
 			WorkerCapacityGenerator wcGen = new WorkerCapacityGenerator(
 					GeocrowdConstants.MAX_WORKER_CAPACITY);
+			WorkerIDGenerator widGenerator = new WorkerIDGenerator(
+					workerIdDist, uniqueWorkerCount);
 			while (in.ready()) {
 				String line = in.readLine();
 				String[] parts = line.split(GeocrowdConstants.delimiter.toString());
@@ -265,9 +267,8 @@ public class GenericProcessor {
 						Double.parseDouble(parts[0]),
 						Double.parseDouble(parts[1]));
 				w.setCapacity(wcGen.nextWorkerCapacity(capacityType));
-				WorkerIDGenerator widGenerator = new WorkerIDGenerator(
-						workerIdDist, uniqueWorkerCount);
 				int workerId = widGenerator.nextWorkerId();
+				w.setId(String.valueOf(workerId));
 				w.setActiveness(widGenerator.getWorkerIdToActiveness().get(
 						workerId));
 
@@ -368,6 +369,7 @@ public class GenericProcessor {
 	public void generateSynWorkers() {
 		String outputFileFrefix = Utils.datasetToWorkerPath(DATA_SET);
 		for (int i = 0; i < GeocrowdConstants.TIME_INSTANCE; i++) {
+			System.out.println(i);
 			generateSyncWorkersFromDataPoints(outputFileFrefix + i + ".txt",
 					GeocrowdConstants.WORKER_FILE_PATH + i + ".txt",
 					workingRegionType, workerCapacityType);

@@ -15,6 +15,8 @@ package org.geocrowd.common.crowd;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.geocrowd.datasets.params.GeocrowdConstants;
+
 // TODO: Auto-generated Javadoc
 /**
  * Each worker has a working region and a set of expertise.
@@ -102,7 +104,7 @@ public class ExpertWorker extends RegionWorker {
 	@Override
 	public String toString() {
 		if (expertiseSet != null)
-			return super.toString() + ",[" + toStringExpertise() + "]";
+			return super.toString() + GeocrowdConstants.delimiter_dataset + "[" + toStringExpertise() + "]";
 		else
 			return super.toString();
 	}

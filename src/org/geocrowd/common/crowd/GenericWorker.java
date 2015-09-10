@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.geocrowd.common.crowd;
 
+import org.geocrowd.datasets.params.GeocrowdConstants;
+
 // TODO: Auto-generated Javadoc
 /**
  * The Class GenericWorker.
@@ -22,6 +24,11 @@ public class GenericWorker {
 
 	/** The user id. */
 	public String id;
+	
+    /**
+     * The entry time.
+     */
+    private int onlineTime;
 
 	/** The lat. */
 	protected double lat;
@@ -137,11 +144,20 @@ public class GenericWorker {
 	public void setActiveness(double activeness) {
 		this.activeness = activeness;
 	}
+	
+
+	public int getOnlineTime() {
+        return onlineTime;
+    }
+
+    public void setOnlineTime(int onlineTime) {
+        this.onlineTime = onlineTime;
+    }
 
 	@Override
 	public String toString() {
-		return getId() + "," + getLat() + "," + getLng() + ","
-				+ getCapacity() + "," + getActiveness();
+		return getId() + GeocrowdConstants.delimiter_dataset + getLat() + GeocrowdConstants.delimiter_dataset + getLng() + GeocrowdConstants.delimiter_dataset
+				+ getCapacity() + GeocrowdConstants.delimiter_dataset + getActiveness();
 	}
 
 }

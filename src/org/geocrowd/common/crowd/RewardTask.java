@@ -1,5 +1,6 @@
 package org.geocrowd.common.crowd;
 
+import org.geocrowd.datasets.params.GeocrowdConstants;
 
 /**
  * The Class RewardedTask.
@@ -63,6 +64,6 @@ public class RewardTask extends GenericTask {
 
 	@Override
 	public String toString() {
-		return super.toString() + "," + mReward;
+		return super.toString() + GeocrowdConstants.delimiter_dataset + mReward;
 	}
 }

@@ -32,14 +32,14 @@ public class Parser {
 
 			while (in.ready()) {
 				String line = in.readLine();
-				line = line.replace("],[", ";");
+				line = line.replace("];[", ";");
 				String[] parts = line.split(";");
-				parts[0] = parts[0].replace(",[", ";");
+				parts[0] = parts[0].replace(";[", ";");
 				String[] parts1 = parts[0].split(";");
 
-				String[] coords = parts1[0].split(",");
+				String[] coords = parts1[0].split(GeocrowdConstants.delimiter_dataset);
 
-				String[] boundary = parts1[1].split(",");
+				String[] boundary = parts1[1].split(GeocrowdConstants.delimiter_dataset);
 
 				double mbr_minLat = Double.parseDouble(boundary[0]);
 				double mbr_minLng = Double.parseDouble(boundary[1]);
@@ -81,7 +81,7 @@ public class Parser {
 			BufferedReader in = new BufferedReader(reader);
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(",");
+				String[] parts = line.split(GeocrowdConstants.delimiter_dataset);
 				ExpertTask t = (ExpertTask) TaskFactory.getTask(
 						TaskType.EXPERT, Double.parseDouble(parts[0]),
 						Double.parseDouble(parts[1]));
@@ -100,6 +100,10 @@ public class Parser {
 		return cnt;
 	}
 
+	
+	/**
+	 * Not in used 
+	 */
 	public static int parseSensingTasks(String fileName,
 			ArrayList<GenericTask> taskList) {
 		int cnt = 0;
@@ -111,7 +115,7 @@ public class Parser {
 			BufferedReader in = new BufferedReader(reader);
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(",");
+				String[] parts = line.split(GeocrowdConstants.delimiter_dataset);
 				if ("".equals(line.trim()) || parts.length < 4)
 					continue;
 				SensingTask t = (SensingTask) TaskFactory.getTask(
@@ -144,7 +148,7 @@ public class Parser {
 			BufferedReader in = new BufferedReader(reader);
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(",");
+				String[] parts = line.split(GeocrowdConstants.delimiter_dataset);
 				if ("".equals(line.trim()) || parts.length < 4)
 					continue;
 				SensingTask t = (SensingTask) TaskFactory.getTask(
@@ -176,17 +180,11 @@ public class Parser {
 
 			while (in.ready()) {
 				String line = in.readLine();
-				line = line.replace("],[", ";");
-				String[] parts = line.split(";");
-				parts[0] = parts[0].replace(",[", ";");
-				String[] parts1 = parts[0].split(";");
-
-				String[] coords = parts1[0].split(",");
-
-				GenericWorker w = WorkerFactory.getWorker(WorkerType.GENERIC, Double.parseDouble(coords[1]), Double.parseDouble(coords[2]));
-				w.setId(coords[0]);
-				w.setCapacity(Integer.parseInt(coords[3]));
-
+				String[] parts = line.split(GeocrowdConstants.delimiter_dataset);
+				GenericWorker w = WorkerFactory.getWorker(WorkerType.GENERIC, Double.parseDouble(parts[1]), Double.parseDouble(parts[2]));
+				w.setId(parts[0]);
+				w.setCapacity(Integer.parseInt(parts[3]));
+				
 				workerList.add(w);
 				cnt++;
 			}
@@ -199,6 +197,9 @@ public class Parser {
 		return cnt;
 	}
 
+	/**
+	 * Not in used 
+	 */
 	public static int parseSensingWorkers(String fileName,
 			ArrayList<GenericWorker> workerList, int timeInstance) {
 		int cnt = 0;
@@ -208,12 +209,12 @@ public class Parser {
 
 			while (in.ready()) {
 				String line = in.readLine();
-				line = line.replace("],[", ";");
+				line = line.replace("];[", ";");
 				String[] parts = line.split(";");
-				parts[0] = parts[0].replace(",[", ";");
+				parts[0] = parts[0].replace(";[", ";");
 				String[] parts1 = parts[0].split(";");
 
-				String[] coords = parts1[0].split(",");
+				String[] coords = parts1[0].split(GeocrowdConstants.delimiter_dataset);
 
 				SensingWorker w = (SensingWorker) WorkerFactory
 						.getWorker(WorkerType.SENSING, Double.parseDouble(coords[1]), Double.parseDouble(coords[2]));

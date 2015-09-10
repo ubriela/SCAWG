@@ -12,6 +12,7 @@
 *******************************************************************************/
 package org.geocrowd.common.crowd;
 
+import org.geocrowd.datasets.params.GeocrowdConstants;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -72,7 +73,7 @@ public class ExpertTask extends GenericTask {
 
 	@Override
 	public String toString() {
-		return super.toString() + ","
+		return super.toString() + GeocrowdConstants.delimiter_dataset
 				+ getCategory();
 	}
 	
