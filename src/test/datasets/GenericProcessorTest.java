@@ -59,7 +59,7 @@ public class GenericProcessorTest {
 		ArrivalRateGenerator.time_instances_per_cycle = 7;
 		int instances = ArrivalRateGenerator.time_instances_per_cycle * 8;
 		ScalingDataProcessor scale = new ScalingDataProcessor(instances,
-				ArrivalRateEnum.CONSTANT, ArrivalRateEnum.ZIPFIAN, 500, 1000, "./res/dataset/worker/",
+				ArrivalRateEnum.POISSON, ArrivalRateEnum.POISSON, 500, 1000, "./res/dataset/worker/",
 				"./res/dataset/task/");
 	}
 	

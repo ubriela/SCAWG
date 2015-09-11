@@ -19,6 +19,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -603,6 +606,10 @@ public class Utils {
 	 */
 	public static void writefile2(String s, String filename) {
 		try {
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(filename);
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(filename);
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(s);
@@ -759,7 +766,11 @@ public class Utils {
 
 		// Output the chart to a file.
 		try {
-			map.saveToFile(new File("./res/graph/hists/twod/" + fileName));
+			String filename = "./res/graph/hists/twod/" + fileName;
+			Path pathToFile = Paths.get(filename);
+			Files.createDirectories(pathToFile.getParent());
+			
+			map.saveToFile(new File(filename));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

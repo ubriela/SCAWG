@@ -60,7 +60,7 @@ public class UtilsTest {
 	@Test
 	public final void testEquiSizedGrid() {
 		DataProvider md = new DataProvider(
-				"./dataset/scale/task_dist.txt", 2);
+				"./dataset/scale/worker_dist.txt", 2);
 		Rectangle boundary = new Rectangle(new Point(md.min_x, md.min_y),
 				new Point(md.max_x, md.max_y));
 		EquiSizedGrid equiSizedGrid = new EquiSizedGrid(boundary,
@@ -70,6 +70,6 @@ public class UtilsTest {
 		int[][] stats = equiSizedGrid.histCount();
 
 		// Utils.print(stats);
-		Utils.createHeatMap(stats, "task-hist.jpg");
+		Utils.createHeatMap(stats, "worker-hist.jpg");
 	}
 }

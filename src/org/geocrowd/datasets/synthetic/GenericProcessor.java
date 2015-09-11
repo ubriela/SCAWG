@@ -5,6 +5,9 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Hashtable;
 
 import org.geocrowd.DatasetEnum;
@@ -212,6 +215,9 @@ public class GenericProcessor {
 	protected void dumpBoundary() {
 		String boundaryPath = Utils.datasetToBoundary(DATA_SET);
 		try {
+			Path pathToFile = Paths.get(boundaryPath);
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(boundaryPath);
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(minLat + " " + minLng + " " + maxLat + " " + maxLng);
@@ -250,6 +256,10 @@ public class GenericProcessor {
 		TaskCategoryGenerator tcGen = new TaskCategoryGenerator(
 				GeocrowdConstants.TASK_CATEGORY_NUMBER);
 		try {
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(outputFile);
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(outputFile);
 			BufferedWriter out = new BufferedWriter(writer);
 			StringBuffer sb = new StringBuffer();
@@ -304,6 +314,10 @@ public class GenericProcessor {
 			String inputFile) {
 		int taskCount = 0;
 		try {
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(outputFile);
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(outputFile);
 			BufferedWriter out = new BufferedWriter(writer);
 			FileReader reader = new FileReader(inputFile);
@@ -369,7 +383,6 @@ public class GenericProcessor {
 	public void generateSynWorkers() {
 		String outputFileFrefix = Utils.datasetToWorkerPath(DATA_SET);
 		for (int i = 0; i < GeocrowdConstants.TIME_INSTANCE; i++) {
-			System.out.println(i);
 			generateSyncWorkersFromDataPoints(outputFileFrefix + i + ".txt",
 					GeocrowdConstants.WORKER_FILE_PATH + i + ".txt",
 					workingRegionType, workerCapacityType);

@@ -2,6 +2,9 @@ package org.geocrowd.common.entropy;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -32,6 +35,10 @@ public class EntropyUtility {
 	public static void computeLocationEntropy(
 			Hashtable<Integer, ArrayList<Observation>> hashTable, String filePath) {
 		try {
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(filePath);
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(filePath);
 			BufferedWriter out = new BufferedWriter(writer);
 
@@ -70,6 +77,11 @@ public class EntropyUtility {
 
 		try {
 			StringBuffer sb = new StringBuffer();
+			
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(locationDensityFileName);
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(locationDensityFileName);
 			BufferedWriter out = new BufferedWriter(writer);
 
@@ -133,6 +145,11 @@ public class EntropyUtility {
 			Hashtable<Integer, Hashtable<Integer, Hashtable<Integer, Integer>>> regionOccurances, DatasetEnum DATA_SET) {
 		try {
 			String entropyPath = EntropyUtility.datasetToEntropyPath(DATA_SET);
+			
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(entropyPath);
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writerEntropy = new FileWriter(entropyPath);
 			BufferedWriter outEntropy = new BufferedWriter(writerEntropy);
 

@@ -2,6 +2,9 @@ package org.geocrowd.datasets.synthetic;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -754,10 +757,14 @@ public class Distribution2DGenerator {
 	 * 
 	 * @param points
 	 */
-	private void writePointsToFile(Vector<Point> points, String outFilePath) {
+	private void writePointsToFile(Vector<Point> points, String outputFile) {
 		// Create file
 		try {
-			FileWriter fstream = new FileWriter(outFilePath);
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(outputFile);
+			Files.createDirectories(pathToFile.getParent());
+			
+			FileWriter fstream = new FileWriter(outputFile);
 			BufferedWriter out = new BufferedWriter(fstream);
 			StringBuffer sb = new StringBuffer();
 			Iterator<Point> it = points.iterator();
@@ -784,10 +791,14 @@ public class Distribution2DGenerator {
 	 * @param points
 	 */
 	private void writePointsToFileWithKey(Vector<Point> points,
-			String outFilePath) {
+			String outputFile) {
 		// Create file
 		try {
-			FileWriter fstream = new FileWriter(outFilePath);
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(outputFile);
+			Files.createDirectories(pathToFile.getParent());
+			
+			FileWriter fstream = new FileWriter(outputFile);
 			BufferedWriter out = new BufferedWriter(fstream);
 			StringBuffer sb = new StringBuffer();
 			int i = 1;
@@ -818,10 +829,14 @@ public class Distribution2DGenerator {
 	 * @param points
 	 */
 	private void writeWeightedPointsToFile(Vector<WeightedPoint> points,
-			String outFilePath) {
+			String outputFile) {
 		// Create file
 		try {
-			FileWriter fstream = new FileWriter(outFilePath);
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(outputFile);
+			Files.createDirectories(pathToFile.getParent());
+			
+			FileWriter fstream = new FileWriter(outputFile);
 			BufferedWriter out = new BufferedWriter(fstream);
 			out.write("50\t50");
 
@@ -846,10 +861,14 @@ public class Distribution2DGenerator {
 	 * 
 	 * @param points
 	 */
-	private void writeIntegersToFile(Vector<Double> values, String outFilePath) {
+	private void writeIntegersToFile(Vector<Double> values, String outputFile) {
 		// Create file
 		try {
-			FileWriter fstream = new FileWriter(outFilePath);
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(outputFile);
+			Files.createDirectories(pathToFile.getParent());
+			
+			FileWriter fstream = new FileWriter(outputFile);
 			BufferedWriter out = new BufferedWriter(fstream);
 			Iterator<Double> it = values.iterator();
 			if (it.hasNext())
@@ -868,10 +887,14 @@ public class Distribution2DGenerator {
 	}
 
 	private void writeValuesToFile(List<ValueFreq<Double>> valueFreqs,
-			String outFilePath) {
+			String outputFile) {
 		// Create file
 		try {
-			FileWriter fstream = new FileWriter(outFilePath);
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(outputFile);
+			Files.createDirectories(pathToFile.getParent());
+			
+			FileWriter fstream = new FileWriter(outputFile);
 			BufferedWriter out = new BufferedWriter(fstream);
 			Iterator<ValueFreq<Double>> it = valueFreqs.iterator();
 			if (it.hasNext()) {
@@ -898,10 +921,14 @@ public class Distribution2DGenerator {
 	 * @param string
 	 */
 	private void writeIntegersToFileWithKey(Vector<Double> values,
-			String outFilePath) {
+			String outputFile) {
 		// TODO Auto-generated method stub
 		try {
-			FileWriter fstream = new FileWriter(outFilePath);
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(outputFile);
+			Files.createDirectories(pathToFile.getParent());
+			
+			FileWriter fstream = new FileWriter(outputFile);
 			BufferedWriter out = new BufferedWriter(fstream);
 			Iterator<Double> it = values.iterator();
 			int i = 1;

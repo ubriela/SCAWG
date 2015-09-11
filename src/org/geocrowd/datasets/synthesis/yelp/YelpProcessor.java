@@ -22,6 +22,9 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import org.geocrowd.common.crowd.GenericWorker;
@@ -537,6 +540,9 @@ public class YelpProcessor {
         
 		FileWriter writer;
 		try {
+			Path pathToFile = Paths.get(YelpConstants.tasks_loc);
+			Files.createDirectories(pathToFile.getParent());
+			
 			writer = new FileWriter(YelpConstants.tasks_loc);
 			BufferedWriter out = new BufferedWriter(writer);
 			out = new BufferedWriter(writer);
@@ -697,6 +703,9 @@ public class YelpProcessor {
         
 		FileWriter writer;
 		try {
+			Path pathToFile = Paths.get(filename);
+			Files.createDirectories(pathToFile.getParent());
+			
 			writer = new FileWriter(filename);
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(sb.toString());

@@ -13,6 +13,9 @@
 package org.geocrowd.datasets.synthesis.gowalla;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.sql.Date;
 import java.util.Collections;
@@ -122,8 +125,13 @@ public class GowallaProcessor extends GenericProcessor {
 				FileReader file = new FileReader(workerFilePath + i + ".txt");
 				BufferedReader in = new BufferedReader(file);
 
-				FileWriter writer = new FileWriter(
-						Utils.datasetToWorkerPointPath() + i + ".txt");
+				// create whole path automatically if not exist
+				String filename = 
+						Utils.datasetToWorkerPointPath() + i + ".txt";
+				Path pathToFile = Paths.get(filename);
+				Files.createDirectories(pathToFile.getParent());
+				
+				FileWriter writer = new FileWriter(filename);
 				BufferedWriter out = new BufferedWriter(writer);
 
 				while (in.ready()) {
@@ -217,6 +225,9 @@ public class GowallaProcessor extends GenericProcessor {
 				}
 			}
 
+			Path pathToFile = Paths.get(filename + ".dat");
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(filename + ".dat");
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(sb.toString());
@@ -266,6 +277,9 @@ public class GowallaProcessor extends GenericProcessor {
 			}
 			data.put(prev_id, points);
 
+			Path pathToFile = Paths.get(filename + ".dat");
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(filename + ".dat");
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(sb.toString());
@@ -361,6 +375,9 @@ public class GowallaProcessor extends GenericProcessor {
 			}
 			data.put(prev_id, points);
 
+			Path pathToFile = Paths.get(filename + ".dat");
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(filename + ".dat");
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(sb.toString());
@@ -462,7 +479,11 @@ public class GowallaProcessor extends GenericProcessor {
 
 		FileWriter writer;
 		try {
-			writer = new FileWriter(path + String.format("%04d", t) + ".txt");
+			String filename = path + String.format("%04d", t) + ".txt";
+			Path pathToFile = Paths.get(filename);
+			Files.createDirectories(pathToFile.getParent());
+			
+			writer = new FileWriter(filename);
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(sb.toString(), 0, sb.length() - 1);
 			out.close();
@@ -493,6 +514,10 @@ public class GowallaProcessor extends GenericProcessor {
 		try {
 			FileReader reader = new FileReader(GowallaConstants.gowallaFileName);
 			BufferedReader in = new BufferedReader(reader);
+			
+			Path pathToFile = Paths.get(filename);
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(filename);
 			BufferedWriter out = new BufferedWriter(writer);
 
@@ -727,6 +752,11 @@ public class GowallaProcessor extends GenericProcessor {
 			BufferedReader in = new BufferedReader(reader);
 
 			String entropyPath = EntropyUtility.datasetToEntropyPath(DATA_SET);
+			
+			// create whole path automatically if not exist
+			Path pathToFile = Paths.get(entropyPath);
+			Files.createDirectories(pathToFile.getParent());
+			
 			FileWriter writer = new FileWriter(entropyPath);
 			BufferedWriter out = new BufferedWriter(writer);
 
@@ -769,9 +799,13 @@ public class GowallaProcessor extends GenericProcessor {
 			BufferedWriter out = null;
 			for (Date date : dates) {
 				if (dayCnt == 0) {
-					FileWriter writer = new FileWriter(
+					String filename = 
 							GowallaConstants.gowallaWorkerFileNamePrefix
-									+ instanceCnt.toString() + ".txt");
+							+ instanceCnt.toString() + ".txt";
+					Path pathToFile = Paths.get(filename);
+					Files.createDirectories(pathToFile.getParent());
+					
+					FileWriter writer = new FileWriter(filename);
 					out = new BufferedWriter(writer);
 				} else if (dayCnt == daysPerInstance) {
 					instanceCnt++;
@@ -821,9 +855,13 @@ public class GowallaProcessor extends GenericProcessor {
 					continue;
 
 				if (workerCnt == 0) {
-					FileWriter writer = new FileWriter(
+					String filename = 
 							GowallaConstants.gowallaWorkerFileNamePrefix
-									+ instanceCnt.toString() + ".txt");
+							+ instanceCnt.toString() + ".txt";
+					Path pathToFile = Paths.get(filename);
+					Files.createDirectories(pathToFile.getParent());
+					
+					FileWriter writer = new FileWriter(filename);
 					out = new BufferedWriter(writer);
 				} else if (workerCnt > GeocrowdConstants.WORKER_NUMBER) {
 					instanceCnt++;
@@ -871,9 +909,13 @@ public class GowallaProcessor extends GenericProcessor {
 				if (i < GowallaConstants.MIN_TIME)
 					continue;
 
-				FileWriter writer = new FileWriter(
+				String filename = 
 						GowallaConstants.gowallaWorkerFileNamePrefix
-								+ instanceCnt.toString() + ".txt");
+						+ instanceCnt.toString() + ".txt";
+				Path pathToFile = Paths.get(filename);
+				Files.createDirectories(pathToFile.getParent());
+				
+				FileWriter writer = new FileWriter(filename);
 				out = new BufferedWriter(writer);
 				Integer workerCnt = 0;
 
