@@ -7,9 +7,9 @@ Hien To
 ---------------------- Packages --------------------------
 
 org.geocrowd
-	common interfaces, e.g, datasets (e.g., skewed, uniform), distributions, worker/task arrival rates
+	geocrowd options, e.g, datasets (e.g., skewed, uniform), distributions, worker/task arrival rates
 	
-org.geocrowd.common.crowdsource
+org.geocrowd.common.crowd
 	common crowdsource objects, e.g., generic worker, sensing task
 
 org.geocrowd.common.entropy
@@ -18,43 +18,40 @@ org.geocrowd.common.entropy
 org.geocrowd.common.utils
 	utility classes, e.g., for computing properties/statistics of the datasets
 
-org.geocrowd.datasets
-	generic data processor and parser
-	
-org.geocrowd.datasets.dtype
+org.geocrowd.dtype
 	common types of data points and queries
+	
+org.geocrowd.datasets.params
+	constants, parameters
+	
+org.geocrowd.datasets.synthetic
+	generic processor and parser
+
+org.geocrowd.datasets.synthetic.grid
+	scaling small datasets to large datasets using 2D histogram
 	
 org.geocrowd.datasets.plot
 	utility classes for plotting data points as well as drawing line, bar charts, etc.
 	
 org.geocrowd.datasets.synthesis
 	classes for generating artificial/synthesized data from real datasets, e.g., gowalla, yelp
-	
-org.geocrowd:
-	main package, with GeoCrowd.java
-	
-org.geocrowd.maxmatching:
-	a package to solve weighted bipartite matching
 
 test.datasets:
 	testing functions
 
 ----------- SYNTHETIC DATASETS -----------------------------------------------
 
+Two steps:
 
+Step 1 generates spatial distributions of workers and tasks as well as their time instances (if specify). See function testGenerate2DPoints() in test.datasets.GenericProcessorTest.java. The output of workers and tasks is in the res/dataset/worker and res/dataset/task folders, respectively.
 
------------ Output of data synthesizer (stage 1)
-WORKER FILES
-latitude, longitude
+Step 2 take the output of step 1 to generates various type of worker type and task type combination. The output of workers and tasks is in the dataset/<dataset_type>/worker and res/<dataset_type>/task folders, respectively.
 
-TASK FILES:
-latitude, longitude
-
------------ Output of data synthesizer (stage 2)
+----------- Output Example of Workers and Tasks
 WORKER FILES:
 ******
-worker_id, latitude, longitude, maxT, working_region[min_lat, min_lng, max_lat, max_lng], expertise_ids[expertise_id]
-EAvzjtPx7kBk83GCWiaSDA,33.5130361,-112.08681055,4,[33.500805,-112.0995348,33.5252672,-112.0740863],[33,11,4,5,6]
+worker_id, latitude, longitude, maxT, activeness, working_region[min_lat, min_lng, max_lat, max_lng], expertise_ids[expertise_id]
+EAvzjtPx7kBk83GCWiaSDA,33.5130361,-112.08681055,4, 0.5, [33.500805,-112.0995348,33.5252672,-112.0740863],[33,11,4,5,6]
 ******
 
 TASK FILES:
