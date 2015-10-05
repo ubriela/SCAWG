@@ -31,7 +31,7 @@ public class GeocrowdConstants {
 	public static int WORKER_NUMBER = 0;
 
 	/** the length of task availability */
-	public static int MAX_TASK_DURATION = 5;
+	public static int MAX_TASK_DURATION = 10;
 	
 	/** enable random k */
 	public static boolean RANDOM_REQUIREMENT = false;

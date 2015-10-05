@@ -679,18 +679,28 @@ public class Distribution2DGenerator {
 			for (int j = 0; j < stats[0].length; j++)
 				arr[i * stats[0].length + j] = stats[i][j];
 		RouletteWheelGenerator rwGen = new RouletteWheelGenerator<Integer>(arr);
-
+		
 		Vector<Point> points = new Vector<Point>();
-
-		UniformGenerator uniGenerator = new UniformGenerator();
+		ArrayList<Long> seeds = new ArrayList<>();
+		// compute seed for Gaussian cluster
+		Distribution2DGenerator.gaussianCluster = 1;
+		
+		for (int i = 0; i < gaussianCluster; i++)
+			seeds.add((long) UniformGenerator.randomValue(
+					new Range(0, 1000000), true));
+		Distribution2DGenerator.seeds = seeds;
+//		UniformGenerator uniGenerator = new UniformGenerator();
 		for (int i = 0; i < size; i++) {
 			int index = rwGen.nextValue();
 			int x = index / stats.length;
 			int y = index - x * stats.length;
 			GridCellMem cell = equiSizedGrid.getGrid()[x][y];
 
-			Point pt = uniGenerator.randomPoint(cell, false);
-			points.add(pt);
+//			Point pt = uniGenerator.randomPoint(cell, false);
+			varianceX = cell.getHighPoint().getX() - cell.getLowPoint().getX();
+			varianceY = cell.getHighPoint().getY() - cell.getLowPoint().getY();
+			Vector<Point> ps = generateMultivarDataset(1, cell);
+			points.addAll(ps);
 		}
 
 		writePointsToFile(points, filePath);

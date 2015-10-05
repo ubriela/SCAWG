@@ -148,8 +148,8 @@ public class TimeInstancesGenerator {
 			Distribution2DGenerator wdg = new Distribution2DGenerator(
 					workerPath + "workers" + i + ".txt");
 			wdg.distributionIndicator = 0;
-			wdg.varianceX = boundary.getHighPoint().getX();
-			wdg.varianceY = boundary.getHighPoint().getY();
+			wdg.varianceX = boundary.getHighPoint().getX() - boundary.getLowPoint().getX();
+			wdg.varianceY = boundary.getHighPoint().getY() - boundary.getLowPoint().getY();;
 			wdg.generate2DDataset(workerCounts.get(i), boundary, workerDist);
 
 			// task

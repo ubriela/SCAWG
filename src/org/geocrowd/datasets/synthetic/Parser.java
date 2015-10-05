@@ -21,6 +21,8 @@ import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.datasets.params.GeocrowdConstants;
 import org.geocrowd.datasets.params.GeocrowdSensingConstants;
 
+import apple.laf.JRSUIConstants.Size;
+
 public class Parser {
 
 	public static int parseExpertWorkers(String fileName,
@@ -209,17 +211,12 @@ public class Parser {
 
 			while (in.ready()) {
 				String line = in.readLine();
-				line = line.replace("];[", ";");
-				String[] parts = line.split(";");
-				parts[0] = parts[0].replace(";[", ";");
-				String[] parts1 = parts[0].split(";");
-
-				String[] coords = parts1[0].split(GeocrowdConstants.delimiter_dataset);
-
+				String[] parts = line.split(GeocrowdConstants.delimiter_dataset);
+				
 				SensingWorker w = (SensingWorker) WorkerFactory
-						.getWorker(WorkerType.SENSING, Double.parseDouble(coords[1]), Double.parseDouble(coords[2]));
-				w.setId(coords[0]);
-				w.setCapacity(Integer.parseInt(coords[3]));
+						.getWorker(WorkerType.SENSING, Double.parseDouble(parts[1]), Double.parseDouble(parts[2]));
+				w.setId(parts[0]);
+				w.setCapacity(Integer.parseInt(parts[3]));
 				w.setOnlineTime(timeInstance);
 
 				workerList.add(w);
