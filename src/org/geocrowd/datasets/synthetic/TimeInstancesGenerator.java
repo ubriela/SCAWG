@@ -156,8 +156,8 @@ public class TimeInstancesGenerator {
 			Distribution2DGenerator tdg = new Distribution2DGenerator(taskPath
 					+ "tasks" + i + ".txt");
 			tdg.distributionIndicator = 1;
-			tdg.varianceX = boundary.getHighPoint().getX();
-			tdg.varianceY = boundary.getHighPoint().getY();
+			tdg.varianceX = boundary.getHighPoint().getX()/10;
+			tdg.varianceY = boundary.getHighPoint().getY()/10;
 			tdg.generate2DDataset(taskCounts.get(i), boundary, taskDist);
 		}
 	}

@@ -715,7 +715,7 @@ public class Distribution2DGenerator {
 	 */
 	private Vector<Point> generateMixture(int size, Rectangle boundary) {
 		Vector<Point> points = new Vector<Point>();
-		int gaussian_count = 9 * size / 10;
+		int gaussian_count = size / 2;
 		int uniform_count = size - gaussian_count;
 		Vector<Point> gaussian_points = generateMultivarDataset(gaussian_count,
 				boundary);

@@ -44,12 +44,12 @@ public class GenericProcessorTest {
 		
 		ArrivalRateGenerator.time_instances_per_cycle = 7;
 //		int instances = ArrivalRateGenerator.time_instances_per_cycle * 260;
-		int instances = 1;
-		TimeInstancesGenerator.gaussianCluster = 1;
+		int instances = 10;
+		TimeInstancesGenerator.gaussianCluster = 4;
 		TimeInstancesGenerator ti = new TimeInstancesGenerator(instances,
-				ArrivalRateEnum.CONSTANT, ArrivalRateEnum.CONSTANT, 500, 1000,
-				new Rectangle(0, 0, 99, 99), Distribution2DEnum.GAUSSIAN_2D,
-				Distribution2DEnum.GAUSSIAN_2D, "./res/dataset/worker/",
+				ArrivalRateEnum.CONSTANT, ArrivalRateEnum.CONSTANT, 500, 2000,
+				new Rectangle(0, 0, 99, 99), Distribution2DEnum.UNIFORM_2D,
+				Distribution2DEnum.UNIFORM_2D, "./res/dataset/worker/",
 				"./res/dataset/task/");
 	}
 	
