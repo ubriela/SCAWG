@@ -1,6 +1,18 @@
 *** This repository is the implementation of the following paper: ***
 Hien To, Mohammad Asghari, Dingxiong Deng, Cyrus Shahabi. SCAWG: A Toolbox for Generating Synthetic Workload for Spatial Crowdsourcing. The First IEEE International Workshop on Benchmarks for Ubiquitous Crowdsourcing: Metrics, Methodologies, and Datasets, 2016
 
+Related studies:
+
+https://github.com/infolab-usc/geocrowd
+
+https://github.com/ubriela/geocrowd-priv-dynamic
+
+https://github.com/ubriela/geocrowd-priv
+
+https://github.com/ubriela/geocrowd-priv-demo
+
+https://github.com/ubriela/geocrowd-complex
+
 ---------------------- Version --------------------------
 1.1
 ---------------------- Contributors --------------------------
