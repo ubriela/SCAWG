@@ -42,14 +42,14 @@ public class GenericProcessorTest {
 	@Test
 	public final void testGenerate2DPoints() {
 		
-		ArrivalRateGenerator.time_instances_per_cycle = 7;
+		ArrivalRateGenerator.time_instances_per_cycle = 1;
 //		int instances = ArrivalRateGenerator.time_instances_per_cycle * 260;
-		int instances = 10;
-		TimeInstancesGenerator.gaussianCluster = 4;
+		int instances = 1;
+		TimeInstancesGenerator.gaussianCluster = 1;
 		TimeInstancesGenerator ti = new TimeInstancesGenerator(instances,
-				ArrivalRateEnum.CONSTANT, ArrivalRateEnum.CONSTANT, 500, 2000,
-				new Rectangle(0, 0, 99, 99), Distribution2DEnum.UNIFORM_2D,
-				Distribution2DEnum.UNIFORM_2D, "./res/dataset/worker/",
+				ArrivalRateEnum.CONSTANT, ArrivalRateEnum.CONSTANT, 100000, 2000,
+				new Rectangle(0, 0, 99, 99), Distribution2DEnum.GAUSSIAN_2D,
+				Distribution2DEnum.GAUSSIAN_2D, "./res/dataset/worker/",
 				"./res/dataset/task/");
 	}
 	
@@ -68,12 +68,12 @@ public class GenericProcessorTest {
 	 */
 	@Test
 	public void testGenerateSynWorkersTasks() {
-		ArrivalRateGenerator.time_instances_per_cycle = 7;
-		int instances = ArrivalRateGenerator.time_instances_per_cycle * 8;
-		GenericProcessor prep = new GenericProcessor(instances, 100000, DatasetEnum.SCALE,
-				WorkerIDEnum.GAUSSIAN, WorkerType.EXPERT,
+		ArrivalRateGenerator.time_instances_per_cycle = 1;
+		int instances = 1;//ArrivalRateGenerator.time_instances_per_cycle * 8;
+		GenericProcessor prep = new GenericProcessor(instances, 10000, DatasetEnum.SKEWED,
+				WorkerIDEnum.GAUSSIAN, WorkerType.GENERIC,
 				WorkingRegionEnum.CONSTANT, WorkerCapacityEnum.CONSTANT,
-				TaskType.SENSING, TaskCategoryEnum.RANDOM,
+				TaskType.GENERIC, TaskCategoryEnum.RANDOM,
 				TaskRadiusEnum.RANDOM, TaskRewardEnum.RANDOM, TaskDurationEnum.RANDOM);
 	}
 }

@@ -19,6 +19,7 @@ public enum DatasetEnum {
 	UNIFORM,
 	GOWALLA,
 	YELP,
+	MPING,
 	
 	/** The small dataset used to test program. */
 	SMALL_TEST,

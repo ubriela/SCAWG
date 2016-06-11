@@ -690,6 +690,8 @@ public class Utils {
 			return "dataset/real/yelp/yelp_boundary.txt";
 		case SCALE:
 			return "dataset/scale/scale_boundary.txt";
+		case MPING:
+			return "dataset/real/mping/mping_boundary.txt";
 		}
 		return "";
 	}

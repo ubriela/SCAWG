@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.geocrowd.common.crowd;
 
+import java.util.Random;
+
 import org.geocrowd.datasets.params.GeocrowdConstants;
 
 // TODO: Auto-generated Javadoc
@@ -154,10 +156,20 @@ public class GenericWorker {
         this.onlineTime = onlineTime;
     }
 
+//	@Override
+//	public String toString() {
+//		return getId() + GeocrowdConstants.delimiter_dataset + getLat() + GeocrowdConstants.delimiter_dataset + getLng() + GeocrowdConstants.delimiter_dataset
+//				+ getCapacity() + GeocrowdConstants.delimiter_dataset + getActiveness();
+//	}
+	
+    
+    // temp
 	@Override
 	public String toString() {
-		return getId() + GeocrowdConstants.delimiter_dataset + getLat() + GeocrowdConstants.delimiter_dataset + getLng() + GeocrowdConstants.delimiter_dataset
-				+ getCapacity() + GeocrowdConstants.delimiter_dataset + getActiveness();
+		Random rand = new Random();
+		int randomNum = rand.nextInt();
+		return getId() + GeocrowdConstants.delimiter_dataset + "xxx" + GeocrowdConstants.delimiter_dataset + getLat() + GeocrowdConstants.delimiter_dataset + getLng() + GeocrowdConstants.delimiter_dataset
+				+ randomNum;
 	}
 
 }

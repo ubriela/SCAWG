@@ -2,15 +2,17 @@
  * @ Year 2013
  * This is the source code of the following papers. 
  * 
- * 1) Geocrowd: A Server-Assigned Crowdsourcing Framework. Hien To, Leyla Kazemi, Cyrus Shahabi.
- * 
+ * 1) Hien To, Mohammad Asghari, Dingxiong Deng, Cyrus Shahabi. 
+ * SCAWG: A Toolbox for Generating Synthetic Workload for Spatial Crowdsourcing. 
+ * The First IEEE International Workshop on Benchmarks for Ubiquitous Crowdsourcing: 
+ * Metrics, Methodologies, and Datasets, 2016
  * 
  * Please contact the author Hien To, ubriela@gmail.com if you have any question.
  *
  * Contributors:
  * Hien To - initial implementation
  *******************************************************************************/
-package org.geocrowd.datasets.synthesis.gowalla;
+package org.geocrowd.datasets.synthesis.mping;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -24,6 +26,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 import org.geocrowd.DatasetEnum;
 import org.geocrowd.TaskCategoryEnum;
@@ -49,15 +52,17 @@ import org.geocrowd.dtype.PointTime;
 /**
  * The Class PreProcess.
  * 
- * @author Leyla & Hien To
+ * @author Hien To
  */
-public class GowallaProcessor extends GenericProcessor {
+public class MPingProcessor extends GenericProcessor {
 
 	/**
 	 * Instantiates a new pre process.
 	 */
-	public GowallaProcessor(int instances, WorkerType workerType, TaskType taskType, TaskCategoryEnum taskCategory) {
-		super(instances, DatasetEnum.GOWALLA, workerType, taskType, taskCategory);
+	public MPingProcessor(int instances, WorkerType workerType,
+			TaskType taskType, TaskCategoryEnum taskCategory) {
+		super(instances, DatasetEnum.MPING, workerType, taskType,
+				taskCategory);
 	}
 
 	/**
@@ -69,15 +74,14 @@ public class GowallaProcessor extends GenericProcessor {
 	@Override
 	public void computeBoundary() {
 		try {
-			FileReader reader = new FileReader(
-					GowallaConstants.gowallaFileName_CA);
+			FileReader reader = new FileReader("dataset/real/mping/mping.txt");
 			BufferedReader in = new BufferedReader(reader);
 			int cnt = 0;
 			while (in.ready()) {
 				String line = in.readLine();
 				String[] parts = line.split("\\s");
-				Double lat = Double.parseDouble(parts[2]);
-				Double lng = Double.parseDouble(parts[3]);
+				Double lat = Double.parseDouble(parts[3]);
+				Double lng = Double.parseDouble(parts[2]);
 
 				if (lat < minLat)
 					minLat = lat;
@@ -115,11 +119,10 @@ public class GowallaProcessor extends GenericProcessor {
 				BufferedReader in = new BufferedReader(file);
 
 				// create whole path automatically if not exist
-				String filename = 
-						Utils.datasetToWorkerPointPath() + i + ".txt";
+				String filename = Utils.datasetToWorkerPointPath() + i + ".txt";
 				Path pathToFile = Paths.get(filename);
 				Files.createDirectories(pathToFile.getParent());
-				
+
 				FileWriter writer = new FileWriter(filename);
 				BufferedWriter out = new BufferedWriter(writer);
 
@@ -168,7 +171,8 @@ public class GowallaProcessor extends GenericProcessor {
 			BufferedReader in = new BufferedReader(file);
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(GeocrowdConstants.delimiter.toString());
+				String[] parts = line.split(GeocrowdConstants.delimiter
+						.toString());
 				Double lat = Double.parseDouble(parts[0]);
 				Double lng = Double.parseDouble(parts[1]);
 				int row = latToRowIdx(lat);
@@ -216,7 +220,7 @@ public class GowallaProcessor extends GenericProcessor {
 
 			Path pathToFile = Paths.get(filename + ".dat");
 			Files.createDirectories(pathToFile.getParent());
-			
+
 			FileWriter writer = new FileWriter(filename + ".dat");
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(sb.toString());
@@ -268,7 +272,7 @@ public class GowallaProcessor extends GenericProcessor {
 
 			Path pathToFile = Paths.get(filename + ".dat");
 			Files.createDirectories(pathToFile.getParent());
-			
+
 			FileWriter writer = new FileWriter(filename + ".dat");
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(sb.toString());
@@ -321,22 +325,21 @@ public class GowallaProcessor extends GenericProcessor {
 			FileReader reader = new FileReader(filename);
 			BufferedReader in = new BufferedReader(reader);
 			StringBuffer sb = new StringBuffer();
-			HashMap<Integer, ArrayList<PointTime>> data = new HashMap<Integer, ArrayList<PointTime>>();
-			ArrayList<PointTime> points = new ArrayList<PointTime>();
 			PriorityQueue<PointTime> sortedData = new PriorityQueue<>();
-			Integer prev_id = -1;
 			while (in.ready()) {
 				String line = in.readLine();
 				String[] parts = line.split("\\s");
-				Integer id = Integer.parseInt(parts[0]);
-				String time = parts[1];
+				Random r = new Random();
+				String time = parts[0];
 				String timeParts[] = time.split("-");
 				int year = Integer.valueOf(timeParts[0]);
 				int month = Integer.valueOf(timeParts[1]);
 				int day = Integer.valueOf(timeParts[2].substring(0, 2));
 				int hour = Integer.valueOf(timeParts[2].substring(3, 5));
-				int timestamp = ((year - 2005) * 365 + month * 30 + day) * 24
+				int timestamp = ((year - 2010) * 365 + month * 30 + day) * 24
 						+ hour;
+				
+//				System.out.println(year + " " + month + " " + day + " " + hour + " " + timestamp);
 
 				Double lat = Double.parseDouble(parts[2]);
 				Double lng = Double.parseDouble(parts[3]);
@@ -344,52 +347,18 @@ public class GowallaProcessor extends GenericProcessor {
 				/**
 				 * Add point to queue
 				 */
-				PointTime pt = new PointTime(id, timestamp, lat, lng);
+				PointTime pt = new PointTime(0, timestamp, lat, lng);
 				sortedData.add(pt);
-
-				if (id.equals(prev_id)) { // add to current list
-					points.add(pt);
-				} else {
-					// create new list
-					points = new ArrayList<PointTime>();
-					points.add(pt);
-
-					// add current list to data
-					data.put(prev_id, points);
-
-					sb.append(lat + "\t" + lng + "\n");
-				}
-
-				prev_id = id;
+				sb.append(lat + "\t" + lng + "\n");
 			}
-			data.put(prev_id, points);
 
 			Path pathToFile = Paths.get(filename + ".dat");
 			Files.createDirectories(pathToFile.getParent());
-			
+
 			FileWriter writer = new FileWriter(filename + ".dat");
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(sb.toString());
 			out.close();
-
-			// iterate through HashMap keys Enumeration
-			double sum = 0;
-			int count = 0;
-			double maxMBR = 0;
-			HashMap<Integer, PointTime> userLocs = new HashMap<Integer, PointTime>();
-			Iterator<Integer> it = data.keySet().iterator();
-			while (it.hasNext()) {
-				Integer t = it.next();
-				ArrayList<PointTime> pts = data.get(t);
-				ArrayList<Point> pts_t = new ArrayList<Point>(pts);
-				WorkingRegion mbr = new WorkingRegion(Utils.computeMBR(pts_t));
-
-				userLocs.put(
-						t,
-						new PointTime(t, 0,
-								(mbr.getMaxLat() + mbr.getMinLat()) / 2.0, (mbr
-										.getMaxLng() + mbr.getMinLng()) / 2.0));
-			}
 
 			/**
 			 * Create data for each time instance
@@ -400,78 +369,25 @@ public class GowallaProcessor extends GenericProcessor {
 				allDataArr.add(sortedData.poll());
 			}
 
-			for (int t = 0; t < instance; t++) {
-				HashMap<Integer, PointTime> currUserLocs = (HashMap<Integer, PointTime>) userLocs
-						.clone();
-
-				/**
-				 * construct a dictionary of users that update their locations
-				 */
-				HashMap<Integer, ArrayList<PointTime>> userUpdates = new HashMap<Integer, ArrayList<PointTime>>();
-				for (PointTime point : allDataArr.subList(t * width, t * width
-						+ width)) {
-					if (userUpdates.containsKey(point.getUserid()))
-						userUpdates.get(point.getUserid()).add(point);
-					else {
-						ArrayList<PointTime> arr = new ArrayList<PointTime>();
-						arr.add(point);
-						userUpdates.put(point.getUserid(), arr);
-					}
-				}
-
-				/**
-				 * For each user
-				 */
-				int updateCount = 0; // number of users update their locations
-				Iterator currIter = currUserLocs.keySet().iterator();
-				while (currIter.hasNext()) {
-					Integer key = (Integer) currIter.next();
-					ArrayList<PointTime> new_locs = null;
-					if (userUpdates.containsKey(key))
-						new_locs = userUpdates.get(key);
-					else
-						continue;
-
-					updateCount++;
-					ArrayList<Point> pts_t = new ArrayList<Point>(new_locs);
-					WorkingRegion mbr = new WorkingRegion(
-							Utils.computeMBR(pts_t));
-
-					PointTime p = new PointTime(key, 0,
-							(mbr.getMaxLat() + mbr.getMinLat()) / 2.0,
-							(mbr.getMaxLng() + mbr.getMinLng()) / 2.0);
-					currUserLocs.put(key, p);
-				}
-
-				System.out.println("updates count " + updateCount);
-				saveWorkerInstance(outputPath, t, currUserLocs);
-
-			}
-
-			System.out.println("Number of users: " + data.keySet().size());
-			System.out.println("Average users' MBR size: " + sum / count);
-			System.out.println("Max users' MBR size: " + maxMBR);
+			for (int t = 0; t < instance; t++) 
+				saveWorkerInstance(outputPath, t, allDataArr.subList(t * width, t * width + width));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void saveWorkerInstance(String path, int t,
-			HashMap<Integer, PointTime> userLocs) {
+			List<PointTime> userLocs) {
 		StringBuffer sb = new StringBuffer();
-		for (PointTime p : userLocs.values()) {
-			// p.debug();
-			// System.out.println(p.getY());
-			// System.out.println(p.getX() + "\t" + p.getY());
-			sb.append(p.getUserid() + "\t" + p.getX() + "\t" + p.getY() + "\n");
-		}
+		for (PointTime p : userLocs)
+			sb.append(p.getX() + "\t" + p.getY() + "\n");
 
 		FileWriter writer;
 		try {
 			String filename = path + String.format("%04d", t) + ".txt";
 			Path pathToFile = Paths.get(filename);
 			Files.createDirectories(pathToFile.getParent());
-			
+
 			writer = new FileWriter(filename);
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(sb.toString(), 0, sb.length() - 1);
@@ -503,17 +419,18 @@ public class GowallaProcessor extends GenericProcessor {
 		try {
 			FileReader reader = new FileReader(GowallaConstants.gowallaFileName);
 			BufferedReader in = new BufferedReader(reader);
-			
+
 			Path pathToFile = Paths.get(filename);
 			Files.createDirectories(pathToFile.getParent());
-			
+
 			FileWriter writer = new FileWriter(filename);
 			BufferedWriter out = new BufferedWriter(writer);
 
 			int cnt = 0;
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(GeocrowdConstants.delimiter.toString());
+				String[] parts = line.split(GeocrowdConstants.delimiter
+						.toString());
 				Integer userID = Integer.parseInt(parts[0]);
 				Double lat = Double.parseDouble(parts[2]);
 				Double lng = Double.parseDouble(parts[3]);
@@ -561,24 +478,26 @@ public class GowallaProcessor extends GenericProcessor {
 					GeocrowdConstants.TASK_CATEGORY_NUMBER);
 			while (in.ready()) {
 				String line = in.readLine();
-				String[] parts = line.split(GeocrowdConstants.delimiter.toString());
+				String[] parts = line.split(GeocrowdConstants.delimiter
+						.toString());
 				String[] DateTimeStr = parts[1].split("T");
 				Date date = Date.valueOf(DateTimeStr[0]);
-				
+
 				GenericWorker w = WorkerFactory.getWorker(workerType,
 						Double.parseDouble(parts[2]),
 						Double.parseDouble(parts[3]));
 				w.setId(parts[0]);
-				w.setCapacity(0);	// not used yet
-				w.setActiveness(0);	// not used yet
-				
+				w.setCapacity(0); // not used yet
+				w.setActiveness(0); // not used yet
+
 				if (workerType == WorkerType.REGION
 						|| workerType == WorkerType.EXPERT
 						|| workerType == WorkerType.SENSING) {
 					RegionWorker rw = (RegionWorker) w;
-					WorkingRegion mbr = new WorkingRegion(w.getLat() - 2 / resolution, w.getLng()
-							- 2 / resolution, w.getLat() + 2 / resolution, w.getLng() + 2
-							/ resolution);
+					WorkingRegion mbr = new WorkingRegion(w.getLat() - 2
+							/ resolution, w.getLng() - 2 / resolution,
+							w.getLat() + 2 / resolution, w.getLng() + 2
+									/ resolution);
 					// make sure the MBR is within the boundary
 					if (mbr.getMinLat() < minLat)
 						mbr.setMinLat(minLat);
@@ -594,7 +513,7 @@ public class GowallaProcessor extends GenericProcessor {
 					ExpertWorker ew = (ExpertWorker) w;
 					ew.addExpertise(tcGen.nextTaskCategory(taskCategoryType));
 				}
-			
+
 				if (!hashTable.containsKey(date)) {
 					ArrayList<GenericWorker> workers = new ArrayList<GenericWorker>();
 					workers.add(w);
@@ -607,7 +526,7 @@ public class GowallaProcessor extends GenericProcessor {
 					for (GenericWorker o : workers) {
 						RegionWorker rw = (RegionWorker) w;
 						if (rw.getId().equals(w.getId())) {
-							
+
 							o.incCapacity(); // set maxTask as the number of
 												// check-ins
 
@@ -741,11 +660,11 @@ public class GowallaProcessor extends GenericProcessor {
 			BufferedReader in = new BufferedReader(reader);
 
 			String entropyPath = EntropyUtility.datasetToEntropyPath(DATA_SET);
-			
+
 			// create whole path automatically if not exist
 			Path pathToFile = Paths.get(entropyPath);
 			Files.createDirectories(pathToFile.getParent());
-			
+
 			FileWriter writer = new FileWriter(entropyPath);
 			BufferedWriter out = new BufferedWriter(writer);
 
@@ -788,12 +707,11 @@ public class GowallaProcessor extends GenericProcessor {
 			BufferedWriter out = null;
 			for (Date date : dates) {
 				if (dayCnt == 0) {
-					String filename = 
-							GowallaConstants.gowallaWorkerFileNamePrefix
+					String filename = GowallaConstants.gowallaWorkerFileNamePrefix
 							+ instanceCnt.toString() + ".txt";
 					Path pathToFile = Paths.get(filename);
 					Files.createDirectories(pathToFile.getParent());
-					
+
 					FileWriter writer = new FileWriter(filename);
 					out = new BufferedWriter(writer);
 				} else if (dayCnt == daysPerInstance) {
@@ -844,12 +762,11 @@ public class GowallaProcessor extends GenericProcessor {
 					continue;
 
 				if (workerCnt == 0) {
-					String filename = 
-							GowallaConstants.gowallaWorkerFileNamePrefix
+					String filename = GowallaConstants.gowallaWorkerFileNamePrefix
 							+ instanceCnt.toString() + ".txt";
 					Path pathToFile = Paths.get(filename);
 					Files.createDirectories(pathToFile.getParent());
-					
+
 					FileWriter writer = new FileWriter(filename);
 					out = new BufferedWriter(writer);
 				} else if (workerCnt > GeocrowdConstants.WORKER_NUMBER) {
@@ -898,12 +815,11 @@ public class GowallaProcessor extends GenericProcessor {
 				if (i < GowallaConstants.MIN_TIME)
 					continue;
 
-				String filename = 
-						GowallaConstants.gowallaWorkerFileNamePrefix
+				String filename = GowallaConstants.gowallaWorkerFileNamePrefix
 						+ instanceCnt.toString() + ".txt";
 				Path pathToFile = Paths.get(filename);
 				Files.createDirectories(pathToFile.getParent());
-				
+
 				FileWriter writer = new FileWriter(filename);
 				out = new BufferedWriter(writer);
 				Integer workerCnt = 0;

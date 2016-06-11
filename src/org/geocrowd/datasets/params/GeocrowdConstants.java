@@ -17,7 +17,7 @@ package org.geocrowd.datasets.params;
 public class GeocrowdConstants {
 
 	public static Character delimiter = '\t';
-	public static String delimiter_dataset = ";";
+	public static String delimiter_dataset = "\t";
 
 	/** The number of time instances. */
 	public static int TIME_INSTANCE = 7;
