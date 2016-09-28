@@ -156,20 +156,20 @@ public class GenericWorker {
         this.onlineTime = onlineTime;
     }
 
-//	@Override
-//	public String toString() {
-//		return getId() + GeocrowdConstants.delimiter_dataset + getLat() + GeocrowdConstants.delimiter_dataset + getLng() + GeocrowdConstants.delimiter_dataset
-//				+ getCapacity() + GeocrowdConstants.delimiter_dataset + getActiveness();
-//	}
+	@Override
+	public String toString() {
+		return getId() + GeocrowdConstants.delimiter_dataset + getLat() + GeocrowdConstants.delimiter_dataset + getLng() + GeocrowdConstants.delimiter_dataset
+				+ getCapacity() + GeocrowdConstants.delimiter_dataset + getActiveness();
+	}
 	
     
     // temp
-	@Override
-	public String toString() {
-		Random rand = new Random();
-		int randomNum = rand.nextInt();
-		return getId() + GeocrowdConstants.delimiter_dataset + "xxx" + GeocrowdConstants.delimiter_dataset + getLat() + GeocrowdConstants.delimiter_dataset + getLng() + GeocrowdConstants.delimiter_dataset
-				+ randomNum;
-	}
+//	@Override
+//	public String toString() {
+//		Random rand = new Random();
+//		int randomNum = rand.nextInt();
+//		return getId() + GeocrowdConstants.delimiter_dataset + "xxx" + GeocrowdConstants.delimiter_dataset + getLat() + GeocrowdConstants.delimiter_dataset + getLng() + GeocrowdConstants.delimiter_dataset
+//				+ randomNum;
+//	}
 
 }

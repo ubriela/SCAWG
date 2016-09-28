@@ -17,7 +17,7 @@ package org.geocrowd.datasets.params;
 public class GeocrowdConstants {
 
 	public static Character delimiter = '\t';
-	public static String delimiter_dataset = "\t";
+	public static String delimiter_dataset = ";";
 
 	/** The number of time instances. */
 	public static int TIME_INSTANCE = 7;
@@ -28,10 +28,10 @@ public class GeocrowdConstants {
 	/**
 	 * The number of workers
 	 */
-	public static int WORKER_NUMBER = 0;
+	public static int WORKER_NUMBER = 1000;
 
 	/** the length of task availability */
-	public static int MAX_TASK_DURATION = 10;
+	public static int MAX_TASK_DURATION = 5;
 	
 	/** enable random k */
 	public static boolean RANDOM_REQUIREMENT = false;

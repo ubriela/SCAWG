@@ -13,6 +13,8 @@ import org.geocrowd.WorkerType;
 import org.geocrowd.WorkingRegionEnum;
 import org.geocrowd.common.crowd.ExpertWorker;
 import org.geocrowd.common.crowd.GenericWorker;
+import org.geocrowd.common.crowd.RegionWorker;
+import org.geocrowd.common.crowd.SensingWorker;
 import org.geocrowd.common.entropy.Coord;
 import org.geocrowd.common.entropy.EntropyUtility;
 import org.geocrowd.common.entropy.Observation;
@@ -34,7 +36,7 @@ public class GowallaParserTest {
 		// compute occurrences of each location id from Gowalla
 		// each location id is associated with a grid 
 		Hashtable<Integer, ArrayList<Observation>> occurances = prep
-				.readRealEntropyData(GowallaConstants.gowallaFileName_CA);
+				.readEntropyData(GowallaConstants.gowallaFileName_CA);
 		
 		// compute entropy of each location id 
 		EntropyUtility.computeLocationEntropy(occurances, 
@@ -51,14 +53,14 @@ public class GowallaParserTest {
 	 */
 	@Test
 	public void generateWorkers_irain() {
-		GowallaProcessor prep = new GowallaProcessor(20,
-				WorkerType.EXPERT, TaskType.EXPERT,
+		GowallaProcessor prep = new GowallaProcessor(28,
+				WorkerType.GENERIC, TaskType.SENSING,
 				TaskCategoryEnum.RANDOM);
 
 		// generating workers from Gowalla
 		Hashtable<Date, ArrayList<GenericWorker>> hashTable = prep
-				.generateRealWorkers(GowallaConstants.gowallaFileName_CA);
-		prep.saveRealWorkersMax(hashTable);
+				.generateWorkers(GowallaConstants.gowallaFileName_CA);
+		prep.saveWorkersMax(hashTable);
 		
 //		prep.saveLocationDensity(prep.computeLocationDensity());
 //		prep.regionEntropy();
@@ -72,7 +74,7 @@ public class GowallaParserTest {
 	@Test
 	public void testGenerateWorkers_privgeocrowd() {
 		GowallaProcessor prep = new GowallaProcessor(20,
-				WorkerType.EXPERT, TaskType.EXPERT,
+				WorkerType.EXPERT, TaskType.SENSING,
 				TaskCategoryEnum.RANDOM);
 		
 		// CA: 32.1713906, -124.3041035, 41.998434033, -114.0043464333
@@ -82,8 +84,8 @@ public class GowallaParserTest {
 		// Yelp: 
 		prep.filterInput("dataset/real/gowalla/gowalla_CA", 32.1713906, -124.3041035, 41.998434033, -114.0043464333);
 		prep.computeBoundary();
-//		prep.extractCoords("dataset/real/gowalla/gowalla_CA");
-		prep.extractWorkersInstances("dataset/real/gowalla/gowalla_CA", "dataset/real/gowalla/worker/gowalla_workers", 50);
+//		prep.extractCoords("dataset/real/gowalla/gowalla_CA", 100);
+		prep.extractWorkersInstances("dataset/real/gowalla/gowalla_CA", "dataset/real/gowalla/worker/workers", 50);
 	}
 	
 
@@ -96,10 +98,10 @@ public class GowallaParserTest {
 				WorkerType.EXPERT, TaskType.EXPERT,
 				TaskCategoryEnum.RANDOM);
 		
-//		prep.filterInput(GeocrowdConstants.gowallaFileName_CA, 32.1713906, -124.3041035, 41.998434033, -114.0043464333);
+		prep.filterInput(GowallaConstants.gowallaFileName_CA, 32.1713906, -124.3041035, 41.998434033, -114.0043464333);
 		
-		prep.filterInput("dataset/real/gowalla/gowalla_sample", 7.841649, -176.037659, 33.575540, -118.176210);
-		prep.extractCoords("dataset/real/gowalla/gowalla_sample", 100);
+//		prep.filterInput("dataset/real/gowalla/gowalla_sample", 7.841649, -176.037659, 33.575540, -118.176210);
+//		prep.extractCoords("dataset/real/gowalla/gowalla_sample", 100);
 		prep.computeBoundary();
 	}
 }

@@ -42,6 +42,7 @@ import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.datasets.params.GeocrowdConstants;
 //import org.geocrowd.common.crowd.WorkingRegion;
 import org.geocrowd.datasets.params.GowallaConstants;
+import org.geocrowd.datasets.params.MPingConstants;
 import org.geocrowd.datasets.params.YelpConstants;
 import org.geocrowd.dtype.GenericPoint;
 import org.geocrowd.dtype.Point;
@@ -646,6 +647,8 @@ public class Utils {
 			return "dataset/uni/worker/uni_workers";
 		case SCALE:
 			return "dataset/scale/worker/scale_workers";
+		case MPING:
+			return "dataset/real/mping/worker2/mping_workers";
 		}
 		return "";
 	}
@@ -670,6 +673,8 @@ public class Utils {
 			return "dataset/uni/task/uni_tasks";
 		case SCALE:
 			return "dataset/scale/task/scale_tasks";
+		case MPING:
+			return "dataset/real/mping/task/mping_tasks";
 		}
 		return "";
 	}
@@ -711,6 +716,8 @@ public class Utils {
 			return YelpConstants.YELP_GRID_RESOLUTION;
 		case SCALE:
 			return GeocrowdConstants.SCALE_GRID_RESOLUTION;
+		case MPING:
+			return MPingConstants.MPING_GRID_RESOLUTION;
 		}
 		return 0;
 	}

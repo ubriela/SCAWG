@@ -470,7 +470,7 @@ public class GenericProcessor {
 		resolution = Utils.datasetToResolution(DATA_SET);
 		rowCount = colCount = resolution;
 		System.out
-				.println("rowcount: " + rowCount + "    colCount:" + colCount);
+				.println("rowCount: " + rowCount + "    colCount:" + colCount);
 	}
 
 	/**

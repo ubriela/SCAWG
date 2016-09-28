@@ -43,7 +43,7 @@ import org.geocrowd.common.entropy.Observation;
 import org.geocrowd.common.utils.TaskUtility;
 import org.geocrowd.common.utils.Utils;
 import org.geocrowd.datasets.params.GeocrowdConstants;
-import org.geocrowd.datasets.params.GowallaConstants;
+import org.geocrowd.datasets.params.MPingConstants;
 import org.geocrowd.datasets.synthetic.GenericProcessor;
 import org.geocrowd.datasets.synthetic.TaskCategoryGenerator;
 import org.geocrowd.dtype.Point;
@@ -154,44 +154,6 @@ public class MPingProcessor extends GenericProcessor {
 			}
 		}
 
-		return densities;
-	}
-
-	/**
-	 * Compute sync location density.
-	 * 
-	 * @return the hashtable
-	 */
-	public Hashtable<Integer, Hashtable<Integer, Integer>> computeLocationDensityFromFile() {
-		String filePath = GowallaConstants.gowallaFileName_CA_loc;
-
-		Hashtable<Integer, Hashtable<Integer, Integer>> densities = new Hashtable<Integer, Hashtable<Integer, Integer>>();
-		try {
-			FileReader file = new FileReader(filePath);
-			BufferedReader in = new BufferedReader(file);
-			while (in.ready()) {
-				String line = in.readLine();
-				String[] parts = line.split(GeocrowdConstants.delimiter
-						.toString());
-				Double lat = Double.parseDouble(parts[0]);
-				Double lng = Double.parseDouble(parts[1]);
-				int row = latToRowIdx(lat);
-				int col = lngToColIdx(lng);
-				if (densities.containsKey(row)) {
-					if (densities.get(row).containsKey(col))
-						densities.get(row).put(col,
-								densities.get(row).get(col) + 1);
-					else
-						densities.get(row).put(col, 1);
-				} else {
-					Hashtable<Integer, Integer> rows = new Hashtable<Integer, Integer>();
-					rows.put(col, 1);
-					densities.put(row, rows);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		return densities;
 	}
 
@@ -380,7 +342,7 @@ public class MPingProcessor extends GenericProcessor {
 			List<PointTime> userLocs) {
 		StringBuffer sb = new StringBuffer();
 		for (PointTime p : userLocs)
-			sb.append(p.getX() + "\t" + p.getY() + "\n");
+			sb.append("0" + "\t" + p.getX() + "\t" + p.getY() + "\n");
 
 		FileWriter writer;
 		try {
@@ -400,7 +362,7 @@ public class MPingProcessor extends GenericProcessor {
 	}
 
 	/**
-	 * Get subset of the gowalla dataset, within a rectangle.
+	 * Get subset of the dataset, within a rectangle.
 	 * 
 	 * @param filename
 	 *            the filename
@@ -417,7 +379,7 @@ public class MPingProcessor extends GenericProcessor {
 			double max_x, double max_y) {
 		System.out.println("Filtering location data...");
 		try {
-			FileReader reader = new FileReader(GowallaConstants.gowallaFileName);
+			FileReader reader = new FileReader(MPingConstants.dataset);
 			BufferedReader in = new BufferedReader(reader);
 
 			Path pathToFile = Paths.get(filename);
@@ -456,7 +418,7 @@ public class MPingProcessor extends GenericProcessor {
 	}
 
 	/**
-	 * Assuming Gowalla users are the workers, we assume all users who checked
+	 * Assuming MPing users are the workers, we assume all users who checked
 	 * in during the day as available workers for that. The method returns a
 	 * hashtable <day, workers>
 	 * 
@@ -470,8 +432,7 @@ public class MPingProcessor extends GenericProcessor {
 			String datasetfile) {
 		Hashtable<Date, ArrayList<GenericWorker>> hashTable = new Hashtable();
 		try {
-			FileReader reader = new FileReader(
-					GowallaConstants.gowallaFileName_CA);
+			FileReader reader = new FileReader(datasetfile);
 			BufferedReader in = new BufferedReader(reader);
 			int cnt = 0;
 			TaskCategoryGenerator tcGen = new TaskCategoryGenerator(
@@ -480,13 +441,13 @@ public class MPingProcessor extends GenericProcessor {
 				String line = in.readLine();
 				String[] parts = line.split(GeocrowdConstants.delimiter
 						.toString());
-				String[] DateTimeStr = parts[1].split("T");
+				String[] DateTimeStr = parts[0].split("T");
 				Date date = Date.valueOf(DateTimeStr[0]);
 
 				GenericWorker w = WorkerFactory.getWorker(workerType,
 						Double.parseDouble(parts[2]),
 						Double.parseDouble(parts[3]));
-				w.setId(parts[0]);
+				w.setId("0");
 				w.setCapacity(0); // not used yet
 				w.setActiveness(0); // not used yet
 
@@ -518,37 +479,8 @@ public class MPingProcessor extends GenericProcessor {
 					ArrayList<GenericWorker> workers = new ArrayList<GenericWorker>();
 					workers.add(w);
 					hashTable.put(date, workers);
-				} else {
-					ArrayList<GenericWorker> workers = hashTable.get(date);
-					boolean found = false; // check if the worker is already in
-											// the worker list, if yes -->
-											// update his maxTass and R
-					for (GenericWorker o : workers) {
-						RegionWorker rw = (RegionWorker) w;
-						if (rw.getId().equals(w.getId())) {
-
-							o.incCapacity(); // set maxTask as the number of
-												// check-ins
-
-							// set working region R of each worker as MBR of his
-							// check-ins locations
-							if (w.getLat() < rw.getMbr().getMinLat())
-								rw.setMinLat(w.getLat());
-							if (w.getLat() > rw.getMbr().getMaxLat())
-								rw.setMaxLat(w.getLat());
-							if (w.getLng() < rw.getMbr().getMinLng())
-								rw.setMinLng(w.getLng());
-							if (w.getLng() > rw.getMbr().getMaxLng())
-								rw.setMaxLng(w.getLng());
-
-							found = true;
-							break;
-						}
-					}
-					if (!found) {
-						workers.add(w);
-					}
-				}
+				} else
+					hashTable.get(date).add(w);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -557,43 +489,7 @@ public class MPingProcessor extends GenericProcessor {
 	}
 
 	/**
-	 * Used as an input for saveLocationEntropy.
-	 * 
-	 * @return which location belongs to which grid cell
-	 */
-	public Hashtable<Integer, Coord> locIdToCellIndices() {
-		Hashtable hashTable = new Hashtable();
-		try {
-			FileReader reader = new FileReader(
-					GowallaConstants.gowallaFileName_CA);
-			BufferedReader in = new BufferedReader(reader);
-			int cnt = 0;
-			while (in.ready()) {
-				String line = in.readLine();
-				String[] parts = line.split("\\s");
-				Integer userID = Integer.parseInt(parts[0]);
-				Double lat = Double.parseDouble(parts[2]);
-				Double lng = Double.parseDouble(parts[3]);
-				Integer pointID = Integer.parseInt(parts[4]);
-				int row = latToRowIdx(lat);
-				int col = lngToColIdx(lng);
-				Coord g = new Coord(row, col);
-				if (!hashTable.containsKey(pointID)) {
-					hashTable.put(pointID, g);
-				}
-
-				cnt++;
-			}
-			System.out.println("Hashtable<location, grid> size: "
-					+ hashTable.size());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return hashTable;
-	}
-
-	/**
-	 * Read data from a file, e.g., gowalla file
+	 * Read data from a file, e.g., mping file
 	 * 
 	 * @param datasetfile
 	 *            the datasetfile
@@ -647,43 +543,6 @@ public class MPingProcessor extends GenericProcessor {
 	}
 
 	/**
-	 * Save what location in what grid and its corresponding location entropy,
-	 * the entropy information is get from a file which was generated before.
-	 * 
-	 * @param hashTable
-	 *            the hash table
-	 */
-	public void saveLocationEntropy(Hashtable<Integer, Coord> hashTable) {
-		try {
-			FileReader reader = new FileReader(
-					GowallaConstants.gowallaEntropyFileName);
-			BufferedReader in = new BufferedReader(reader);
-
-			String entropyPath = EntropyUtility.datasetToEntropyPath(DATA_SET);
-
-			// create whole path automatically if not exist
-			Path pathToFile = Paths.get(entropyPath);
-			Files.createDirectories(pathToFile.getParent());
-
-			FileWriter writer = new FileWriter(entropyPath);
-			BufferedWriter out = new BufferedWriter(writer);
-
-			while (in.ready()) {
-				String line = in.readLine();
-				String[] parts = line.split(",");
-				int pointId = Integer.parseInt(parts[0]);
-				double entropy = Double.parseDouble(parts[1]);
-				Coord g = hashTable.get(pointId);
-				out.write(g.getRowId() + "," + g.getColId() + "," + entropy
-						+ "\n");
-			}
-			out.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Save real workers.
 	 * 
 	 * Fix the number of time instances
@@ -707,7 +566,7 @@ public class MPingProcessor extends GenericProcessor {
 			BufferedWriter out = null;
 			for (Date date : dates) {
 				if (dayCnt == 0) {
-					String filename = GowallaConstants.gowallaWorkerFileNamePrefix
+					String filename = MPingConstants.workerFileNamePrefix
 							+ instanceCnt.toString() + ".txt";
 					Path pathToFile = Paths.get(filename);
 					Files.createDirectories(pathToFile.getParent());
@@ -758,11 +617,11 @@ public class MPingProcessor extends GenericProcessor {
 			int i = 0;
 			for (Date date : dates) {
 				i++;
-				if (i < GowallaConstants.MIN_TIME)
+				if (i < MPingConstants.MIN_TIME)
 					continue;
 
 				if (workerCnt == 0) {
-					String filename = GowallaConstants.gowallaWorkerFileNamePrefix
+					String filename = MPingConstants.workerFileNamePrefix
 							+ instanceCnt.toString() + ".txt";
 					Path pathToFile = Paths.get(filename);
 					Files.createDirectories(pathToFile.getParent());
@@ -810,12 +669,16 @@ public class MPingProcessor extends GenericProcessor {
 
 			BufferedWriter out = null;
 			int i = 0;
+			for (Date date2 : dates) 
+				System.out.println(hashTable.get(date2).size());
 			for (Date date : dates) {
 				i++;
-				if (i < GowallaConstants.MIN_TIME)
+				if (i < MPingConstants.MIN_TIME)
 					continue;
+				if (i >= GeocrowdConstants.TIME_INSTANCE + MPingConstants.MIN_TIME)
+					break;
 
-				String filename = GowallaConstants.gowallaWorkerFileNamePrefix
+				String filename = MPingConstants.workerFileNamePrefix
 						+ instanceCnt.toString() + ".txt";
 				Path pathToFile = Paths.get(filename);
 				Files.createDirectories(pathToFile.getParent());

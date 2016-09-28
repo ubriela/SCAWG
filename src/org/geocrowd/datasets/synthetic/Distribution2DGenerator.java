@@ -16,18 +16,14 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
-import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.ZipfDistribution;
-import org.geocrowd.Distribution1DEnum;
 import org.geocrowd.Distribution2DEnum;
 import org.geocrowd.common.utils.MurmurHash;
-import org.geocrowd.common.utils.Stats;
 import org.geocrowd.common.utils.Utils;
 import org.geocrowd.datasets.params.GeocrowdConstants;
 import org.geocrowd.datasets.synthetic.grid.DataProvider;
 import org.geocrowd.datasets.synthetic.grid.EquiSizedGrid;
 import org.geocrowd.datasets.synthetic.grid.GridCellMem;
-import org.geocrowd.dtype.DataTypeEnum;
 import org.geocrowd.dtype.Point;
 import org.geocrowd.dtype.Range;
 import org.geocrowd.dtype.Rectangle;

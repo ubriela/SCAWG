@@ -12,7 +12,7 @@ public class GowallaConstants {
 	public static String gowallaFileName = "dataset/real/gowalla/gowalla_totalCheckins.txt";
 
 	/** The gowalla file name_ ca. */
-	public static String gowallaFileName_CA = "dataset/real/gowalla/gowalla_sample";
+	public static String gowallaFileName_CA = "dataset/real/gowalla/gowalla_CA";
 
 	/** The gowalla file name_ sa. */
 	public static String gowallaFileName_SA = "dataset/real/gowalla/gowalla_totalCheckins_SA.txt";

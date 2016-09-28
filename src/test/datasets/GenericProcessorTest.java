@@ -68,12 +68,12 @@ public class GenericProcessorTest {
 	 */
 	@Test
 	public void testGenerateSynWorkersTasks() {
-		ArrivalRateGenerator.time_instances_per_cycle = 1;
-		int instances = 1;//ArrivalRateGenerator.time_instances_per_cycle * 8;
-		GenericProcessor prep = new GenericProcessor(instances, 10000, DatasetEnum.SKEWED,
+		ArrivalRateGenerator.time_instances_per_cycle = 7;
+		int instances = ArrivalRateGenerator.time_instances_per_cycle * 4;
+		GenericProcessor prep = new GenericProcessor(instances, 10000, DatasetEnum.GOWALLA,
 				WorkerIDEnum.GAUSSIAN, WorkerType.GENERIC,
 				WorkingRegionEnum.CONSTANT, WorkerCapacityEnum.CONSTANT,
-				TaskType.GENERIC, TaskCategoryEnum.RANDOM,
-				TaskRadiusEnum.RANDOM, TaskRewardEnum.RANDOM, TaskDurationEnum.RANDOM);
+				TaskType.SENSING, TaskCategoryEnum.RANDOM,
+				TaskRadiusEnum.CONSTANT, TaskRewardEnum.CONSTANT, TaskDurationEnum.CONSTANT);
 	}
 }
