@@ -2,14 +2,14 @@ package test.datasets;
 
 import java.util.Vector;
 
-import org.geocrowd.WorkerType;
-import org.geocrowd.common.crowd.GenericWorker;
-import org.geocrowd.common.crowd.RegionWorker;
-import org.geocrowd.common.crowd.WorkerFactory;
-import org.geocrowd.common.crowd.WorkingRegion;
+import org.geocrowd.common.distribution.WorkerTypeEnum;
+import org.geocrowd.common.workertask.GenericWorker;
+import org.geocrowd.common.workertask.RegionWorker;
+import org.geocrowd.common.workertask.WorkerFactory;
+import org.geocrowd.common.workertask.WorkingRegion;
 import org.geocrowd.common.utils.Utils;
-import org.geocrowd.datasets.synthetic.grid.DataProvider;
-import org.geocrowd.datasets.synthetic.grid.EquiSizedGrid;
+import org.geocrowd.synthetic.grid.DataProvider;
+import org.geocrowd.synthetic.grid.EquiSizedGrid;
 import org.geocrowd.dtype.Point;
 import org.geocrowd.dtype.Rectangle;
 import org.geocrowd.dtype.ValueFreq;
@@ -19,7 +19,7 @@ public class UtilsTest {
 
 	@Test
 	public final void testWorker() {
-		GenericWorker w = new WorkerFactory().getWorker(WorkerType.REGION, 1, 1);
+		GenericWorker w = new WorkerFactory().getWorker(WorkerTypeEnum.REGION_WORKER, 1, 1);
 		
 		System.out.println(w);
 		

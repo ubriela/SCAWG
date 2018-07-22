@@ -4,26 +4,24 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.geocrowd.ArrivalRateEnum;
 import org.geocrowd.DatasetEnum;
-import org.geocrowd.Distribution2DEnum;
-import org.geocrowd.TaskCategoryEnum;
-import org.geocrowd.TaskDurationEnum;
-import org.geocrowd.TaskRadiusEnum;
-import org.geocrowd.TaskRewardEnum;
-import org.geocrowd.TaskType;
-import org.geocrowd.WorkerCapacityEnum;
-import org.geocrowd.WorkerIDEnum;
-import org.geocrowd.WorkerType;
-import org.geocrowd.WorkingRegionEnum;
-import org.geocrowd.common.crowd.GenericWorker;
-import org.geocrowd.datasets.params.GowallaConstants;
-import org.geocrowd.datasets.params.MPingConstants;
-import org.geocrowd.datasets.synthesis.gowalla.GowallaProcessor;
-import org.geocrowd.datasets.synthesis.mping.MPingProcessor;
-import org.geocrowd.datasets.synthetic.ArrivalRateGenerator;
-import org.geocrowd.datasets.synthetic.GenericProcessor;
-import org.geocrowd.datasets.synthetic.TimeInstancesGenerator;
+import org.geocrowd.common.distribution.SpatialDistributionEnum;
+import org.geocrowd.common.distribution.TaskDurationDistributionEnum;
+import org.geocrowd.common.distribution.TaskRadiusDistributionEnum;
+import org.geocrowd.common.distribution.TaskRewardDistributionEnum;
+import org.geocrowd.common.distribution.TaskTypeEnum;
+import org.geocrowd.common.distribution.TaskCategoryDistributionEnum;
+import org.geocrowd.common.distribution.TemporalDistributionEnum;
+import org.geocrowd.common.distribution.WorkerCapacityDistributionEnum;
+import org.geocrowd.common.distribution.WorkerIDDistributionEnum;
+import org.geocrowd.common.distribution.WorkerTypeEnum;
+import org.geocrowd.common.distribution.WorkingRegionDistributionEnum;
+import org.geocrowd.common.workertask.GenericWorker;
+import org.geocrowd.MPingConstants;
+import org.geocrowd.synthesis.MPingProcessor;
+import org.geocrowd.synthetic.ArrivalRateGenerator;
+import org.geocrowd.synthetic.GenericProcessor;
+import org.geocrowd.synthetic.TimeInstancesGenerator;
 import org.geocrowd.dtype.Rectangle;
 
 public class MPingParser {
@@ -33,16 +31,16 @@ public class MPingParser {
 		int instances = Integer.valueOf(args[1]);
 
 		if (param.equals("gen_worker")) {
-//			MPingProcessor prep = new MPingProcessor(20, WorkerType.EXPERT,
-//					TaskType.EXPERT, TaskCategoryEnum.RANDOM);
+//			MPingProcessor prep = new MPingProcessor(20, WorkerTypeEnum.EXPERT,
+//					TaskTypeEnum.EXPERT_TASK, TaskCategoryDistributionEnum.RANDOM);
 //
 //			prep.computeBoundary();
 //			prep.extractWorkersInstances("dataset/real/mping/mping.txt",
 //					"dataset/real/mping/worker/mping_workers", instances);
 			
 			MPingProcessor prep = new MPingProcessor(instances,
-					WorkerType.EXPERT, TaskType.SENSING,
-					TaskCategoryEnum.RANDOM);
+													 WorkerTypeEnum.EXPERT, TaskTypeEnum.SENSING_TASK,
+													 TaskCategoryDistributionEnum.RANDOM);
 
 			// generating workers from mping
 			Hashtable<Date, ArrayList<GenericWorker>> hashTable = prep
@@ -51,25 +49,25 @@ public class MPingParser {
 		} else if (param.equals("gen_task")) {
 			
 			MPingProcessor prep = new MPingProcessor(instances,
-					WorkerType.EXPERT, TaskType.SENSING,
-					TaskCategoryEnum.RANDOM);
+													 WorkerTypeEnum.EXPERT, TaskTypeEnum.SENSING_TASK,
+													 TaskCategoryDistributionEnum.RANDOM);
 			
 			
 			ArrivalRateGenerator.time_instances_per_cycle = 1;
 			TimeInstancesGenerator.gaussianCluster = Integer.valueOf(args[2]);
 			int tMean = Integer.valueOf(args[3]);
 			TimeInstancesGenerator ti = new TimeInstancesGenerator(instances,
-					ArrivalRateEnum.CONSTANT, ArrivalRateEnum.CONSTANT, 1000, tMean,
-					new Rectangle(GenericProcessor.minLat, GenericProcessor.minLng, GenericProcessor.maxLat, GenericProcessor.maxLng), Distribution2DEnum.GAUSSIAN_2D,
-					Distribution2DEnum.GAUSSIAN_2D, "./res/dataset/worker/",
-					"./res/dataset/task/");
+																   TemporalDistributionEnum.CONSTANT, TemporalDistributionEnum.CONSTANT, 1000, tMean,
+																   new Rectangle(GenericProcessor.minLat, GenericProcessor.minLng, GenericProcessor.maxLat, GenericProcessor.maxLng), SpatialDistributionEnum.GAUSSIAN_2D,
+																   SpatialDistributionEnum.GAUSSIAN_2D, "./res/dataset/worker/",
+																   "./res/dataset/task/");
 			
 			
 			GenericProcessor gp = new GenericProcessor(instances, 10000, DatasetEnum.MPING,
-					WorkerIDEnum.GAUSSIAN, WorkerType.GENERIC,
-					WorkingRegionEnum.CONSTANT, WorkerCapacityEnum.CONSTANT,
-					TaskType.SENSING, TaskCategoryEnum.RANDOM,
-					TaskRadiusEnum.CONSTANT, TaskRewardEnum.CONSTANT, TaskDurationEnum.CONSTANT);
+													   WorkerIDDistributionEnum.GAUSSIAN, WorkerTypeEnum.GENERIC_WORKER,
+													   WorkingRegionDistributionEnum.CONSTANT, WorkerCapacityDistributionEnum.CONSTANT,
+													   TaskTypeEnum.SENSING_TASK, TaskCategoryDistributionEnum.RANDOM,
+													   TaskRadiusDistributionEnum.CONSTANT, TaskRewardDistributionEnum.CONSTANT, TaskDurationDistributionEnum.CONSTANT);
 
 		}
 	}

@@ -9,22 +9,22 @@
  *******************************************************************************/
 package test.datasets;
 
-import org.geocrowd.ArrivalRateEnum;
 import org.geocrowd.DatasetEnum;
-import org.geocrowd.Distribution2DEnum;
-import org.geocrowd.TaskCategoryEnum;
-import org.geocrowd.TaskDurationEnum;
-import org.geocrowd.TaskRadiusEnum;
-import org.geocrowd.TaskRewardEnum;
-import org.geocrowd.TaskType;
-import org.geocrowd.WorkerCapacityEnum;
-import org.geocrowd.WorkerIDEnum;
-import org.geocrowd.WorkerType;
-import org.geocrowd.WorkingRegionEnum;
-import org.geocrowd.datasets.synthetic.ArrivalRateGenerator;
-import org.geocrowd.datasets.synthetic.GenericProcessor;
-import org.geocrowd.datasets.synthetic.ScalingDataProcessor;
-import org.geocrowd.datasets.synthetic.TimeInstancesGenerator;
+import org.geocrowd.common.distribution.SpatialDistributionEnum;
+import org.geocrowd.common.distribution.TaskCategoryDistributionEnum;
+import org.geocrowd.common.distribution.TaskDurationDistributionEnum;
+import org.geocrowd.common.distribution.TaskRadiusDistributionEnum;
+import org.geocrowd.common.distribution.TaskRewardDistributionEnum;
+import org.geocrowd.common.distribution.TaskTypeEnum;
+import org.geocrowd.common.distribution.TemporalDistributionEnum;
+import org.geocrowd.common.distribution.WorkerCapacityDistributionEnum;
+import org.geocrowd.common.distribution.WorkerIDDistributionEnum;
+import org.geocrowd.common.distribution.WorkerTypeEnum;
+import org.geocrowd.common.distribution.WorkingRegionDistributionEnum;
+import org.geocrowd.synthetic.ArrivalRateGenerator;
+import org.geocrowd.synthetic.GenericProcessor;
+import org.geocrowd.synthetic.ScalingDataProcessor;
+import org.geocrowd.synthetic.TimeInstancesGenerator;
 import org.geocrowd.dtype.Rectangle;
 import org.junit.Test;
 
@@ -47,10 +47,10 @@ public class GenericProcessorTest {
 		int instances = 1;
 		TimeInstancesGenerator.gaussianCluster = 1;
 		TimeInstancesGenerator ti = new TimeInstancesGenerator(instances,
-				ArrivalRateEnum.CONSTANT, ArrivalRateEnum.CONSTANT, 100000, 2000,
-				new Rectangle(0, 0, 99, 99), Distribution2DEnum.GAUSSIAN_2D,
-				Distribution2DEnum.GAUSSIAN_2D, "./res/dataset/worker/",
-				"./res/dataset/task/");
+															   TemporalDistributionEnum.CONSTANT, TemporalDistributionEnum.CONSTANT, 100000, 2000,
+															   new Rectangle(0, 0, 99, 99), SpatialDistributionEnum.GAUSSIAN_2D,
+															   SpatialDistributionEnum.GAUSSIAN_2D, "./res/dataset/worker/",
+															   "./res/dataset/task/");
 	}
 	
 	@Test
@@ -59,8 +59,8 @@ public class GenericProcessorTest {
 		ArrivalRateGenerator.time_instances_per_cycle = 7;
 		int instances = ArrivalRateGenerator.time_instances_per_cycle * 8;
 		ScalingDataProcessor scale = new ScalingDataProcessor(instances,
-				ArrivalRateEnum.POISSON, ArrivalRateEnum.ZIPFIAN, 500, 1000, "./res/dataset/worker/",
-				"./res/dataset/task/");
+															  TemporalDistributionEnum.POISSON, TemporalDistributionEnum.ZIPFIAN, 500, 1000, "./res/dataset/worker/",
+															  "./res/dataset/task/");
 	}
 	
 	/**
@@ -70,10 +70,10 @@ public class GenericProcessorTest {
 	public void testGenerateSynWorkersTasks() {
 		ArrivalRateGenerator.time_instances_per_cycle = 7;
 		int instances = ArrivalRateGenerator.time_instances_per_cycle * 4;
-		GenericProcessor prep = new GenericProcessor(instances, 10000, DatasetEnum.GOWALLA,
-				WorkerIDEnum.GAUSSIAN, WorkerType.GENERIC,
-				WorkingRegionEnum.CONSTANT, WorkerCapacityEnum.CONSTANT,
-				TaskType.SENSING, TaskCategoryEnum.RANDOM,
-				TaskRadiusEnum.CONSTANT, TaskRewardEnum.CONSTANT, TaskDurationEnum.CONSTANT);
+		GenericProcessor prep = new GenericProcessor(instances, 10000, DatasetEnum.FOURSQUARE,
+													 WorkerIDDistributionEnum.GAUSSIAN, WorkerTypeEnum.GENERIC_WORKER,
+													 WorkingRegionDistributionEnum.CONSTANT, WorkerCapacityDistributionEnum.CONSTANT,
+													 TaskTypeEnum.SENSING_TASK, TaskCategoryDistributionEnum.RANDOM,
+													 TaskRadiusDistributionEnum.CONSTANT, TaskRewardDistributionEnum.CONSTANT, TaskDurationDistributionEnum.CONSTANT);
 	}
 }

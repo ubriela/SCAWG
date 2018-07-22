@@ -34,21 +34,17 @@ import java.util.Random;
 import java.util.Set;
 
 import org.geocrowd.DatasetEnum;
-import org.geocrowd.common.crowd.ExpertTask;
-import org.geocrowd.common.crowd.ExpertWorker;
-import org.geocrowd.common.crowd.GenericTask;
-import org.geocrowd.common.crowd.GenericWorker;
-import org.geocrowd.common.crowd.WorkingRegion;
-import org.geocrowd.datasets.params.GeocrowdConstants;
-//import org.geocrowd.common.crowd.WorkingRegion;
-import org.geocrowd.datasets.params.GowallaConstants;
-import org.geocrowd.datasets.params.MPingConstants;
-import org.geocrowd.datasets.params.YelpConstants;
+import org.geocrowd.GeocrowdConstants;
+import org.geocrowd.GowallaConstants;
+import org.geocrowd.MPingConstants;
+import org.geocrowd.YelpConstants;
 import org.geocrowd.dtype.GenericPoint;
 import org.geocrowd.dtype.Point;
 import org.geocrowd.dtype.Rectangle;
 import org.geocrowd.dtype.ValueFreq;
 import org.tc33.jheatchart.HeatChart;
+
+//import org.geocrowd.common.workertask.WorkingRegion;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -605,13 +601,13 @@ public class Utils {
 	 * @param filename
 	 *            the filename
 	 */
-	public static void writefile2(String s, String filename) {
+	public static void writefile2(String s, String filename, boolean append) {
 		try {
 			// create whole path automatically if not exist
 			Path pathToFile = Paths.get(filename);
 			Files.createDirectories(pathToFile.getParent());
 			
-			FileWriter writer = new FileWriter(filename);
+			FileWriter writer = new FileWriter(filename, append);
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(s);
 			out.close();
@@ -645,7 +641,7 @@ public class Utils {
 			return "dataset/skew/worker/skew_workers";
 		case UNIFORM:
 			return "dataset/uni/worker/uni_workers";
-		case SCALE:
+		case SCALED_IRAIN:
 			return "dataset/scale/worker/scale_workers";
 		case MPING:
 			return "dataset/real/mping/worker2/mping_workers";
@@ -671,7 +667,7 @@ public class Utils {
 			return "dataset/skew/task/skew_tasks";
 		case UNIFORM:
 			return "dataset/uni/task/uni_tasks";
-		case SCALE:
+		case SCALED_IRAIN:
 			return "dataset/scale/task/scale_tasks";
 		case MPING:
 			return "dataset/real/mping/task/mping_tasks";
@@ -689,11 +685,11 @@ public class Utils {
 			return "dataset/skew/skew_boundary.txt";
 		case UNIFORM:
 			return "dataset/uni/uni_boundary.txt";
-		case SMALL_TEST:
+		case FAKE_SMALL_TEST:
 			return "dataset/small/small_boundary.txt";
 		case YELP:
 			return "dataset/real/yelp/yelp_boundary.txt";
-		case SCALE:
+		case SCALED_IRAIN:
 			return "dataset/scale/scale_boundary.txt";
 		case MPING:
 			return "dataset/real/mping/mping_boundary.txt";
@@ -710,11 +706,11 @@ public class Utils {
 			return GeocrowdConstants.SKEWED_GRID_RESOLUTION;
 		case UNIFORM:
 			return GeocrowdConstants.UNIFORM_GRID_RESOLUTION;
-		case SMALL_TEST:
+		case FAKE_SMALL_TEST:
 			return GeocrowdConstants.SMALL_GRID_RESOLUTION;
 		case YELP:
 			return YelpConstants.YELP_GRID_RESOLUTION;
-		case SCALE:
+		case SCALED_IRAIN:
 			return GeocrowdConstants.SCALE_GRID_RESOLUTION;
 		case MPING:
 			return MPingConstants.MPING_GRID_RESOLUTION;

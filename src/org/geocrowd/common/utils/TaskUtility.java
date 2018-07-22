@@ -1,10 +1,10 @@
 package org.geocrowd.common.utils;
 
-import org.geocrowd.common.crowd.ExpertTask;
-import org.geocrowd.common.crowd.ExpertWorker;
-import org.geocrowd.common.crowd.GenericTask;
-import org.geocrowd.common.crowd.GenericWorker;
-import org.geocrowd.common.crowd.WorkingRegion;
+import org.geocrowd.common.workertask.ExpertTask;
+import org.geocrowd.common.workertask.ExpertWorker;
+import org.geocrowd.common.workertask.GenericTask;
+import org.geocrowd.common.workertask.GenericWorker;
+import org.geocrowd.common.workertask.WorkingRegion;
 
 public class TaskUtility {
 

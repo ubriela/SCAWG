@@ -62,19 +62,19 @@ org.geocrowd.common.utils
 org.geocrowd.dtype
 	common types of data points and queries
 	
-org.geocrowd.datasets.params
+org.geocrowd.params
 	constants, parameters
 	
-org.geocrowd.datasets.synthetic
+org.geocrowd.synthetic
 	generic processor and parser
 
-org.geocrowd.datasets.synthetic.grid
+org.geocrowd.synthetic.grid
 	scaling small datasets to large datasets using 2D histogram
 	
-org.geocrowd.datasets.plot
+org.geocrowd.plot
 	utility classes for plotting data points as well as drawing line, bar charts, etc.
 	
-org.geocrowd.datasets.synthesis
+org.geocrowd.synthesis
 	classes for generating artificial/synthesized data from real datasets, e.g., gowalla, yelp
 
 test.datasets:

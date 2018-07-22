@@ -1,13 +1,11 @@
 package test.datasets;
 
-import static org.junit.Assert.*;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.geocrowd.datasets.synthetic.ZipfGenerator;
+import org.geocrowd.synthetic.ZipfGenerator;
 import org.junit.Test;
 
 

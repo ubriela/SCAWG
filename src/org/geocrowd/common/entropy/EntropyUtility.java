@@ -10,8 +10,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.geocrowd.DatasetEnum;
-import org.geocrowd.common.utils.Utils;
-import org.geocrowd.datasets.params.GeocrowdConstants;
 
 /**
  * This class uses Mediator pattern to reduce communication complexity between multiple
@@ -114,7 +112,7 @@ public class EntropyUtility {
 			return "dataset/skew/skew_loc_density.txt";
 		case UNIFORM:
 			return "dataset/uni/uni_loc_density.txt";
-		case SMALL_TEST:
+		case FAKE_SMALL_TEST:
 			return "dataset/small/small_loc_entropy.txt";
 		}
 		return "";

@@ -1,8 +1,6 @@
 package test.datasets;
 
-import static org.junit.Assert.*;
-
-import org.geocrowd.datasets.synthetic.RouletteWheelGenerator;
+import org.geocrowd.synthetic.RouletteWheelGenerator;
 import org.junit.Test;
 
 
